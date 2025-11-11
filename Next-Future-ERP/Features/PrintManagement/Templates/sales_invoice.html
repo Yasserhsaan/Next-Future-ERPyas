@@ -1,0 +1,47 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>فاتورة مبيعات</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="receipt">
+    <h1>فاتورة مبيعات</h1>
+    <p>رقم الفاتورة: {{invoice_number}}</p>
+    <p>التاريخ: {{date}}</p>
+    <p>العميل: {{customer_name}}</p>
+
+    <table class="items">
+      <thead>
+        <tr>
+          <th>الصنف</th>
+          <th>الكمية</th>
+          <th>السعر</th>
+          <th>الإجمالي</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{items}}
+      </tbody>
+    </table>
+
+    <table class="totals">
+      <tr><td>المجموع:</td><td>{{total}}</td></tr>
+      <tr><td>ضريبة VAT (15%):</td><td>{{vat}}</td></tr>
+      <tr><td><strong>الإجمالي:</strong></td><td><strong>{{grand_total}}</strong></td></tr>
+    </table>
+
+    <p>طريقة الدفع: {{payment_method}}</p>
+
+    <div class="qr">
+      <img src="{{qr_code}}" alt="QR Code" width="120" height="120">
+    </div>
+
+    <div class="footer">
+      شكراً لتسوقكم معنا
+    </div>
+  </div>
+</body>
+</html>

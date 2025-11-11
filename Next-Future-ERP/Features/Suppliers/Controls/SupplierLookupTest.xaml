@@ -1,0 +1,32 @@
+<Window x:Class="Next_Future_ERP.Features.Suppliers.Controls.SupplierLookupTest"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="اختبار SupplierLookupWindow"
+        Height="200" Width="400"
+        FlowDirection="RightToLeft"
+        Language="ar-SA"
+        FontFamily="Segoe UI, Cairo, Noto Naskh Arabic"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType">
+    
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <TextBlock Grid.Row="0" 
+                   Text="اختبار SupplierLookupWindow" 
+                   FontSize="18" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,20"
+                   HorizontalAlignment="Center"/>
+        
+        <Button Grid.Row="1"
+                Content="فتح نافذة البحث عن الموردين"
+                Click="TestButton_Click"
+                Padding="20,10"
+                FontSize="14"
+                HorizontalAlignment="Center"/>
+    </Grid>
+</Window>

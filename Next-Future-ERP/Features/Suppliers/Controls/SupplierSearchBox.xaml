@@ -1,0 +1,353 @@
+<UserControl x:Class="Next_Future_ERP.Features.Suppliers.Controls.SupplierSearchBox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             xmlns:converters="clr-namespace:Next_Future_ERP.Core.Converter"
+             mc:Ignorable="d"
+             FlowDirection="RightToLeft"
+             Language="ar-SA"
+             FontFamily="Segoe UI, Cairo, Noto Naskh Arabic"
+             TextOptions.TextFormattingMode="Display"
+             TextOptions.TextRenderingMode="ClearType">
+
+    <UserControl.Resources>
+        <!-- ألوان -->
+        <SolidColorBrush x:Key="Clr.Surface" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="Clr.Border" Color="#E6EAF0"/>
+        <SolidColorBrush x:Key="Clr.BorderFocus" Color="#0A6ED1"/>
+        <SolidColorBrush x:Key="Clr.Muted" Color="#6B7280"/>
+        <SolidColorBrush x:Key="Clr.Primary" Color="#0A6ED1"/>
+        <SolidColorBrush x:Key="Clr.Icon" Color="#6B7280"/>
+        <SolidColorBrush x:Key="Clr.Hover" Color="#F5F7FA"/>
+        <SolidColorBrush x:Key="Clr.Pressed" Color="#EEF2F7"/>
+        <SolidColorBrush x:Key="Clr.Selected" Color="#E6F0FF"/>
+        <SolidColorBrush x:Key="Clr.Separator" Color="#F0F2F5"/>
+
+        <!-- مقاييس -->
+        <CornerRadius x:Key="Radius.S">6</CornerRadius>
+        <CornerRadius x:Key="Radius.M">8</CornerRadius>
+        <sys:Double x:Key="Shadow.Blur">12</sys:Double>
+        <sys:Double x:Key="Shadow.Depth">2</sys:Double>
+        <Color x:Key="Shadow.Color">#1A000000</Color>
+
+        <!-- Converters -->
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+
+        <!-- ظل عام -->
+        <DropShadowEffect x:Key="Elev.S"
+                          Color="{StaticResource Shadow.Color}"
+                          BlurRadius="{StaticResource Shadow.Blur}"
+                          ShadowDepth="{StaticResource Shadow.Depth}"
+                          Opacity="0.35"/>
+
+        <!-- Focus ring للوصولية -->
+        <Style x:Key="FocusRing" TargetType="{x:Type Control}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Control}">
+                        <AdornerDecorator>
+                            <ContentPresenter/>
+                        </AdornerDecorator>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect Color="#330A6ED1" BlurRadius="14" ShadowDepth="0" Opacity="0.9"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBox مُحسّن -->
+        <Style x:Key="SearchBoxStyle" TargetType="TextBox" BasedOn="{StaticResource FocusRing}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Background" Value="{StaticResource Clr.Surface}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="36,10,12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!-- اتجاه ومواءمة صريحة للعربية -->
+            <Setter Property="FlowDirection" Value="RightToLeft"/>
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="Language" Value="ar-SA"/>
+            <Setter Property="FontFamily" Value="Segoe UI, Cairo, Noto Naskh Arabic"/>
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
+            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{StaticResource Radius.M}"/>
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="Bd" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="#C9D6E6"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Clr.BorderFocus}"/>
+                                <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+
+            <!-- Placeholder داخلي -->
+            <Style.Triggers>
+                <Trigger Property="Text" Value="">
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <VisualBrush AlignmentX="Left" AlignmentY="Center" Stretch="None">
+                                <VisualBrush.Visual>
+                                    <!-- مهم: اتجاه ولغة داخل الشجرة البصرية للـ VisualBrush -->
+                                    <DockPanel FlowDirection="RightToLeft" Language="ar-SA" LastChildFill="False">
+                                        <Path Data="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                              Stroke="{StaticResource Clr.Icon}"
+                                              StrokeThickness="1.6"
+                                              Width="16" Height="16"
+                                              Margin="12,0,0,0"
+                                              Opacity="0.6"
+                                              VerticalAlignment="Center"/>
+                                        <TextBlock Text="ابحث بالاسم أو كود المورد…"
+                                                   FlowDirection="RightToLeft"
+                                                   Language="ar-SA"
+                                                   TextAlignment="Right"
+                                                   Foreground="{StaticResource Clr.Muted}"
+                                                   FontStyle="Italic"
+                                                   VerticalAlignment="Center"
+                                                   Margin="6,0,0,0"/>
+                                    </DockPanel>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- زر عام (بحث/مسح) -->
+        <Style x:Key="SearchButtonStyle" TargetType="Button" BasedOn="{StaticResource FocusRing}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="btn"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource Radius.S}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="btn" Property="Background" Value="{StaticResource Clr.Hover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="btn" Property="Background" Value="{StaticResource Clr.Pressed}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="btn" Property="Opacity" Value="0.5"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- عناصر الاقتراحات -->
+        <Style x:Key="SuggestItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="8,10"/>
+            <Setter Property="Margin" Value="4,2"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="root"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{StaticResource Radius.S}">
+                            <ContentPresenter Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="root" Property="Background" Value="{StaticResource Clr.Hover}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="root" Property="Background" Value="{StaticResource Clr.Selected}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="root" Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="SuggestItemTemplate">
+            <!-- اتجاه ولغة صريحة داخل عناصر القائمة -->
+            <Grid FlowDirection="RightToLeft" Language="ar-SA">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="1"/>
+                </Grid.RowDefinitions>
+                <StackPanel Margin="4,0">
+                    <TextBlock Text="{Binding SupplierName}"
+                               FlowDirection="RightToLeft"
+                               TextAlignment="Right"
+                               FontWeight="SemiBold"
+                               Foreground="#1F2937"/>
+                    <TextBlock Text="{Binding SupplierCode}"
+                               FlowDirection="RightToLeft"
+                               TextAlignment="Right"
+                               FontSize="12"
+                               Foreground="{StaticResource Clr.Muted}"
+                               Margin="0,2,0,0"/>
+                    <TextBlock Text="{Binding TaxNumber}"
+                               FlowDirection="RightToLeft"
+                               TextAlignment="Right"
+                               FontSize="11"
+                               Foreground="{StaticResource Clr.Muted}"
+                               Margin="0,1,0,0"
+                               Visibility="{Binding TaxNumber, Converter={StaticResource StringToVisibilityConverter}}"/>
+                </StackPanel>
+                <Border Grid.Row="1" Background="{StaticResource Clr.Separator}" Margin="0,8,0,0"/>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- حقل البحث -->
+        <Grid Grid.Column="0" Margin="0,0,6,0">
+            <TextBox Name="SearchTextBox"
+                     TextChanged="SearchTextBox_TextChanged"
+                     KeyDown="SearchTextBox_KeyDown"
+                     LostFocus="SearchTextBox_LostFocus"
+                     GotFocus="SearchTextBox_GotFocus"
+                     ToolTip="اكتب اسم المورد أو كوده للبحث"
+                     AutomationProperties.Name="حقل البحث عن الموردين"
+                     Style="{StaticResource SearchBoxStyle}"/>
+
+            <!-- زر مسح النص داخل الحقل -->
+            <Button Name="ClearButton"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Width="22"
+                    Height="22"
+                    Margin="8,0,0,0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    ToolTip="مسح النص"
+                    Click="ClearButton_Click"
+                    Visibility="Collapsed"
+                    Style="{StaticResource SearchButtonStyle}">
+                <Path Data="M6 6l12 12M6 18L18 6"
+                      Stroke="#DC2626"
+                      StrokeThickness="2.2"
+                      Width="12" Height="12"
+                      Stretch="Uniform"/>
+            </Button>
+        </Grid>
+
+        <!-- زر البحث -->
+        <Button Grid.Column="1"
+                Name="SearchButton"
+                Style="{StaticResource SearchButtonStyle}"
+                ToolTip="البحث عن مورد"
+                Click="SearchButton_Click"
+                Margin="2,0,0,0">
+            <Path Data="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  Stroke="{StaticResource Clr.Icon}"
+                  StrokeThickness="2"
+                  Width="20" Height="20"
+                  Stretch="Uniform"/>
+        </Button>
+
+        <!-- قائمة الاقتراحات -->
+        <Popup Name="SuggestionsPopup"
+               Placement="Bottom"
+               PlacementTarget="{Binding ElementName=SearchTextBox}"
+               IsOpen="False"
+               AllowsTransparency="True"
+               PopupAnimation="Fade"
+               StaysOpen="False">
+            <Border Background="{StaticResource Clr.Surface}"
+                    BorderBrush="{StaticResource Clr.Border}"
+                    BorderThickness="1"
+                    CornerRadius="{StaticResource Radius.M}"
+                    MinWidth="{Binding ElementName=SearchTextBox, Path=ActualWidth}"
+                    MaxHeight="280"
+                    Padding="2,6"
+                    Effect="{StaticResource Elev.S}">
+                <ListBox Name="SuggestionsListBox"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         MaxHeight="260"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ItemTemplate="{StaticResource SuggestItemTemplate}"
+                         ItemContainerStyle="{StaticResource SuggestItemStyle}"
+                         SelectionChanged="SuggestionsListBox_SelectionChanged"
+                         MouseDoubleClick="SuggestionsListBox_MouseDoubleClick"
+                         KeyboardNavigation.TabNavigation="Cycle"
+                         AutomationProperties.Name="قائمة الاقتراحات">
+                    <ListBox.Resources>
+                        <!-- تخصيص شريط التمرير -->
+                        <Style TargetType="ScrollBar">
+                            <Setter Property="Width" Value="8"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ScrollBar">
+                                        <Grid Background="Transparent">
+                                            <Track x:Name="PART_Track" IsDirectionReversed="true">
+                                                <Track.DecreaseRepeatButton>
+                                                    <RepeatButton Command="ScrollBar.LineUpCommand" Opacity="0" IsHitTestVisible="False"/>
+                                                </Track.DecreaseRepeatButton>
+                                                <Track.IncreaseRepeatButton>
+                                                    <RepeatButton Command="ScrollBar.LineDownCommand" Opacity="0" IsHitTestVisible="False"/>
+                                                </Track.IncreaseRepeatButton>
+                                                <Track.Thumb>
+                                                    <Thumb Height="40" Opacity="0.7">
+                                                        <Thumb.Template>
+                                                            <ControlTemplate TargetType="{x:Type Thumb}">
+                                                                <Border CornerRadius="4" Background="#D0D7E2"/>
+                                                            </ControlTemplate>
+                                                        </Thumb.Template>
+                                                    </Thumb>
+                                                </Track.Thumb>
+                                            </Track>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.Resources>
+                </ListBox>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

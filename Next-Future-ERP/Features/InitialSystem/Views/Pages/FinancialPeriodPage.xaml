@@ -1,0 +1,91 @@
+﻿<UserControl x:Class="Next_Future_ERP.Features.InitialSystem.Views.Pages.FinancialPeriodPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:vm="clr-namespace:Next_Future_ERP.Features.InitialSystem.ViewModels"
+             mc:Ignorable="d"
+             d:DesignHeight="900" d:DesignWidth="500"
+             FlowDirection="RightToLeft">
+
+   
+
+    <Grid Margin="12">
+        <StackPanel HorizontalAlignment="Center" >
+
+            <ui:TextBlock Text="إعداد الفترة المالية"
+                          FontSize="22"
+                          FontWeight="Bold"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,15"/>
+
+            <!-- Settings Group -->
+            <GroupBox Header="الإعدادات العامة" FontWeight="Bold">
+                <StackPanel  Margin="10">
+                    <CheckBox Content="السماح بإدخال تواريخ مستقبلية"
+                              IsChecked="{Binding AllowFutureDateEntry}"/>
+
+                    <CheckBox Content="تدوير الفترات تلقائيًا"
+                              IsChecked="{Binding AutoPeriodRollover}"/>
+
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="سياسة إغلاق الفترة:"
+                                   VerticalAlignment="Center"/>
+                        <ComboBox ItemsSource="{Binding Policies}"
+                                  SelectedItem="{Binding SelectedPolicy}"
+                                  />
+                    </StackPanel>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Fiscal Setup Group -->
+            <GroupBox Header="إعداد السنة المالية" FontWeight="Bold">
+                <StackPanel  Margin="10">
+
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="السنة المالية:" VerticalAlignment="Center"/>
+                        <TextBox Text="{Binding FiscalYear}" IsEnabled="False"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" >
+                        <TextBlock Text="الشهر البدء:" VerticalAlignment="Center"/>
+                        <ComboBox ItemsSource="{Binding AvailableMonths}"
+                                  SelectedItem="{Binding SelectedStartMonth}"
+                                  IsEnabled="False"
+                                  />
+                    </StackPanel>
+
+                    <Button Content="توليد الفترات"
+                            Command="{Binding GeneratePeriodsCommand}"
+                            Width="140"
+                            HorizontalAlignment="Left"
+                            Margin="0,10,0,0"/>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Period Grid -->
+            <GroupBox Header="الفترات الناتجة" FontWeight="Bold">
+               
+                    <DataGrid ItemsSource="{Binding Periods}"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                        
+                              MaxHeight="250"
+                          FontSize="12"
+                          HeadersVisibility="Column"
+                              IsReadOnly="True"
+                           ScrollViewer.VerticalScrollBarVisibility="Auto"
+                          ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                          Margin="0,0,0,0">
+                        <DataGrid.Columns>
+                        <DataGridTextColumn Header="رقم الفترة" Binding="{Binding PeriodId}" Width="Auto"/>
+                        <DataGridTextColumn Header="تاريخ البدء" Binding="{Binding StartDateOfYear, StringFormat=d}" Width="*"/>
+                        <DataGridTextColumn Header="تاريخ الانتهاء" Binding="{Binding EndDateOfYear, StringFormat=d}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+              
+            </GroupBox>
+        </StackPanel>
+    </Grid>
+</UserControl>

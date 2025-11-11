@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ar">
+<head><meta charset="utf-8"><title>طلب</title>
+<style>body{direction:rtl;font-family: Arial;margin:18px} table{width:100%;border-collapse:collapse} th,td{border:1px solid #ddd;padding:6px;text-align:center}</style>
+</head><body>
+  <h2 style="text-align:center;">طلب</h2>
+  <div>نوع الطلب: {{order.type}} &nbsp; | &nbsp; رقم: {{order.number}} &nbsp; | &nbsp; التاريخ: {{order.date}}</div>
+  <table><thead><tr><th>رمز</th><th>الصنف</th><th>الكمية</th><th>الوحدة</th></tr></thead>
+  <tbody>
+    {{#order.items}}
+    <tr><td>{{code}}</td><td style="text-align:right">{{name}}</td><td>{{qty}}</td><td>{{uom}}</td></tr>
+    {{/order.items}}
+  </tbody>
+  </table>
+</body></html>

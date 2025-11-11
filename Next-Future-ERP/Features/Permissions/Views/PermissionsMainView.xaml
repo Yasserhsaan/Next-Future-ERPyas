@@ -1,0 +1,918 @@
+<Page x:Class="Next_Future_ERP.Features.Permissions.Views.PermissionsMainView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:controls="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:viewmodels="clr-namespace:Next_Future_ERP.Features.Permissions.ViewModels"
+      xmlns:converters="clr-namespace:Next_Future_ERP.Features.Permissions.Converters"
+      xmlns:scm="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+      Title="إدارة الصلاحيات والأدوار"
+      FlowDirection="RightToLeft"
+      Background="#F8F9FA">
+
+    <Page.Resources>
+        <!-- ===== Converters ===== -->
+        <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <!-- ===== Card Style ===== -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Gray" Direction="315" ShadowDepth="2" BlurRadius="5" Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== Section Header Style ===== -->
+        <Style x:Key="SectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- ===== Button Styles ===== -->
+        <Style x:Key="ActionButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#007ACC"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12,6"/>
+            <Setter Property="Margin" Value="4,0"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#005A9B"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== DataGrid Styles ===== -->
+        <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserDeleteRows" Value="False"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="RowHeaderWidth" Value="0"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#F0F0F0"/>
+            <Setter Property="VerticalGridLinesBrush" Value="Transparent"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#FAFAFA"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style x:Key="DataGridHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F8F9FA"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <!-- ===== CheckBox Style ===== -->
+        <Style x:Key="CenteredCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+        <!-- ===== ListBox Styles ===== -->
+        <Style x:Key="SideListBoxStyle" TargetType="ListBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <Style x:Key="SideListBoxItemStyle" TargetType="ListBoxItem">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="0,1"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="4">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#F5F5F5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ===== ComboBox Style ===== -->
+        <Style x:Key="ModernComboBoxStyle" TargetType="ComboBox">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="MinWidth" Value="150"/>
+        </Style>
+
+        <!-- ===== Progress Bar Style ===== -->
+        <Style x:Key="ModernProgressBarStyle" TargetType="ProgressBar">
+            <Setter Property="Height" Value="4"/>
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Foreground" Value="#007ACC"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0,4"/>
+        </Style>
+
+        <!-- ===== Loading Overlay Style ===== -->
+        <Style x:Key="LoadingOverlayStyle" TargetType="Border">
+            <Setter Property="Background" Value="#80FFFFFF"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="Gray" Direction="315" ShadowDepth="2" BlurRadius="8" Opacity="0.3"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ===== Loading Text Style ===== -->
+        <Style x:Key="LoadingTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,8,0,0"/>
+        </Style>
+    </Page.Resources>
+
+    <Grid x:Name="MainGrid" Margin="16" >
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="250"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Main Loading Progress Bar -->
+        <ProgressBar Grid.ColumnSpan="2" 
+                     VerticalAlignment="Top" 
+                     Margin="0,0,0,8"
+                     Style="{StaticResource ModernProgressBarStyle}"
+                     Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                     Maximum="{Binding TotalLoadingSteps}"
+                     Value="{Binding LoadingProgress}"/>
+        
+        <!-- Main Loading Message -->
+        <TextBlock Grid.ColumnSpan="2" 
+                   Text="{Binding LoadingMessage}" 
+                   Style="{StaticResource LoadingTextStyle}"
+                   VerticalAlignment="Top"
+                   Margin="0,12,0,0"
+                   Visibility="{Binding LoadingMessage, Converter={StaticResource StringToVisibilityConverter}}"/>
+
+       
+
+        <!-- ===== Left Side Panel ===== -->
+        <StackPanel Grid.Column="0" Margin="0,10,0,0">
+            
+            <!-- الحريفات Section -->
+            <Border Style="{StaticResource CardStyle}" >
+                <StackPanel>
+                    <TextBlock Text="الحريفات" Style="{StaticResource SectionHeaderStyle}"/>
+                    <TextBlock Text="الحريفات الأساسية" FontSize="11" Foreground="#666" Margin="0,0,0,4"/>
+                    
+                    <Grid Height="200">
+                        <ListBox ItemsSource="{Binding MenuForms}"
+                                 SelectedItem="{Binding SelectedMenuForm}"
+                                 Style="{StaticResource SideListBoxStyle}"
+                                 ItemContainerStyle="{StaticResource SideListBoxItemStyle}"
+                                 Visibility="{Binding IsLoadingMenuForms, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DisplayName}" FontSize="11"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        
+                        <!-- Loading Overlay for Menu Forms -->
+                        <Border Style="{StaticResource LoadingOverlayStyle}"
+                                Visibility="{Binding IsLoadingMenuForms, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel>
+                                <ProgressBar IsIndeterminate="True" Width="100" Height="4" 
+                                             Background="#E0E0E0" Foreground="#007ACC"/>
+                                <TextBlock Text="تحميل القوائم..." Style="{StaticResource LoadingTextStyle}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <TextBlock Text="الفئات" FontSize="11" Foreground="#666" Margin="0,0,8,0"/>
+                        <TextBlock Text="التقارير" FontSize="11" Foreground="#666" Margin="0,0,8,0"/>
+                        <TextBlock Text="المبيعات" FontSize="11" Foreground="#666" Margin="0,0,8,0"/>
+                        <TextBlock Text="الأموال الاساسية" FontSize="11" Foreground="#666" Margin="0,0,8,0"/>
+                        <TextBlock Text="الإرجاعات" FontSize="11" Foreground="#666" Margin="0,0,8,0"/>
+                        <TextBlock Text="الإرتجاعات" FontSize="11" Foreground="#666" Margin="0,0,8,0"/>
+                        <TextBlock Text="المواد" FontSize="11" Foreground="#666"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- المستخدمون Section -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="المستخدمون" Style="{StaticResource SectionHeaderStyle}"/>
+                        
+                        <!-- Selected User Indicator -->
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Ellipse Width="8" Height="8" 
+                                     Fill="#28A745" 
+                                     Visibility="{Binding SelectedUser, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                     Margin="0,0,4,0"/>
+                            <TextBlock Text="محدد" 
+                                       FontSize="10" 
+                                       Foreground="#28A745"
+                                       Visibility="{Binding SelectedUser, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                       Margin="0,0,8,0"/>
+                            
+                            <!-- Auto Update Indicator -->
+                            <StackPanel Orientation="Horizontal" 
+                                        Visibility="{Binding IsAutoUpdateEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <Ellipse Width="6" Height="6" 
+                                         Fill="#007ACC" 
+                                         Margin="0,0,2,0">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsAutoUpdateEnabled}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard RepeatBehavior="Forever">
+                                                                <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                                                 From="1.0" To="0.3" Duration="0:0:1"
+                                                                                 AutoReverse="True"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Text="تحديث تلقائي" 
+                                           FontSize="9" 
+                                           Foreground="#007ACC"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <Grid Height="260">
+                        <ListBox ItemsSource="{Binding Users}"
+                                 SelectedItem="{Binding SelectedUser}"
+                                 Style="{StaticResource SideListBoxStyle}"
+                                 ItemContainerStyle="{StaticResource SideListBoxItemStyle}"
+                                 Visibility="{Binding IsLoadingUsers, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontSize="11" FontWeight="SemiBold"/>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding ID, StringFormat='الكود: {0}'}" FontSize="9" Foreground="#888" Margin="0,0,8,0"/>
+                                            <TextBlock Text="{Binding UserRollid, StringFormat='الدور: {0}'}" FontSize="9" Foreground="#007ACC" FontWeight="SemiBold"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        
+                        <!-- Loading Overlay for Users -->
+                        <Border Style="{StaticResource LoadingOverlayStyle}"
+                                Visibility="{Binding IsLoadingUsers, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel>
+                                <ProgressBar IsIndeterminate="True" Width="100" Height="4" 
+                                             Background="#E0E0E0" Foreground="#007ACC"/>
+                                <TextBlock Text="تحميل المستخدمين..." Style="{StaticResource LoadingTextStyle}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- ===== Right Side Content ===== -->
+        <StackPanel Grid.Column="1" Margin="0,10,0,0">
+            
+            <!-- الأدوار Section -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="الأدوار" Style="{StaticResource SectionHeaderStyle}"/>
+                        
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="إضافة" 
+                                    Command="{Binding StartAddingRoleCommand}"
+                                    Style="{StaticResource ActionButtonStyle}"/>
+                            <Button Content="تحرير" 
+                                    Command="{Binding StartEditingRoleCommand}"
+                                    Style="{StaticResource ActionButtonStyle}"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Roles Table -->
+                    <Grid Height="120" Margin="0,8,0,0">
+                        <DataGrid ItemsSource="{Binding Roles}"
+                                  SelectedItem="{Binding SelectedRole}"
+                                  Style="{StaticResource ModernDataGridStyle}"
+                                  ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                  Visibility="{Binding IsLoadingRoles, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="الدور" 
+                                                    Binding="{Binding Name}" 
+                                                    Width="120"/>
+                                <DataGridTextColumn Header="الدوار" 
+                                                    Binding="{Binding RollTypeNameEn}" 
+                                                    Width="120"/>
+                                <DataGridCheckBoxColumn Header="نشط" 
+                                                        Binding="{Binding IsActive}" 
+                                                        Width="60">
+                                    <DataGridCheckBoxColumn.ElementStyle>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CenteredCheckBoxStyle}"/>
+                                    </DataGridCheckBoxColumn.ElementStyle>
+                                </DataGridCheckBoxColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        
+                        <!-- Loading Overlay for Roles -->
+                        <Border Style="{StaticResource LoadingOverlayStyle}"
+                                Visibility="{Binding IsLoadingRoles, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel>
+                                <ProgressBar IsIndeterminate="True" Width="100" Height="4" 
+                                             Background="#E0E0E0" Foreground="#007ACC"/>
+                                <TextBlock Text="تحميل الأدوار..." Style="{StaticResource LoadingTextStyle}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
+            <!-- أذونات الدور Section -->
+            <Border Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <TextBlock Grid.Column="0" Text="أذونات الدور" Style="{StaticResource SectionHeaderStyle}"/>
+                        
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button Content="تحديد الكل ✓" 
+                                    Command="{Binding SelectAllPermissionsCommand}"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Background="#28A745"
+                                    ToolTip="تحديد جميع الصلاحيات لكل القوائم"/>
+                            <Button Content="إلغاء الكل ✗" 
+                                    Command="{Binding DeselectAllPermissionsCommand}"
+                                    Style="{StaticResource ActionButtonStyle}"
+                                    Background="#DC3545"
+                                    ToolTip="إلغاء جميع الصلاحيات لكل القوائم"/>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- User and Role Context Display -->
+                    <TextBlock Text="{Binding CurrentUserRoleContext}" 
+                               FontSize="11" 
+                               Foreground="#666" 
+                               Margin="0,0,0,8"
+                               TextWrapping="Wrap"
+                               Visibility="{Binding CurrentUserRoleContext, Converter={StaticResource StringToVisibilityConverter}}"/>
+                    
+                    <!-- Role Selection -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <TextBlock Text="الدور :" 
+                                   VerticalAlignment="Center" 
+                                   Margin="0,0,8,0"
+                                   FontSize="12"/>
+                        <ComboBox ItemsSource="{Binding Roles}"
+                                  SelectedItem="{Binding SelectedRole}"
+                                  Style="{StaticResource ModernComboBoxStyle}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="{Binding Id, StringFormat='({0})'}" 
+                                                   FontSize="10"
+                                                   Margin="4,0,0,0"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="#666"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        
+                        <TextBlock Text="المستخدم المحدد:" 
+                                   VerticalAlignment="Center" 
+                                   Margin="20,0,8,0"
+                                   FontSize="12"/>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding SelectedUser.Name}" 
+                                       VerticalAlignment="Center" 
+                                       FontSize="12"
+                                       FontWeight="Bold"
+                                       Foreground="#007ACC"
+                                       Margin="0,0,4,0"/>
+                            <TextBlock Text="{Binding SelectedUser.UserRollid, StringFormat='(دور: {0})'}" 
+                                       VerticalAlignment="Center" 
+                                       FontSize="10"
+                                       Foreground="#666"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Quick Select Buttons for Individual Columns -->
+                    <Border BorderBrush="#E0E0E0" 
+                            BorderThickness="1" 
+                            CornerRadius="4" 
+                            Padding="8" 
+                            Margin="0,0,0,8"
+                            Background="#F8F9FA">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" 
+                                       Text="تحديد سريع للأعمدة:" 
+                                       FontSize="11" 
+                                       FontWeight="SemiBold" 
+                                       Margin="0,0,0,6"
+                                       Foreground="#555"/>
+                            
+                            <WrapPanel Grid.Row="1" Orientation="Horizontal">
+                                <!-- Add Column -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                                    <TextBlock Text="إضافة:" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#666"/>
+                                    <Button Content="✓" 
+                                            Command="{Binding SelectAllAddCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#E8F5E9"
+                                            BorderBrush="#4CAF50"
+                                            ToolTip="تحديد الكل"/>
+                                    <Button Content="✗" 
+                                            Command="{Binding DeselectAllAddCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#FFEBEE"
+                                            BorderBrush="#F44336"
+                                            ToolTip="إلغاء الكل"/>
+                                </StackPanel>
+
+                                <!-- Edit Column -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                                    <TextBlock Text="تحرير:" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#666"/>
+                                    <Button Content="✓" 
+                                            Command="{Binding SelectAllEditCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#E8F5E9"
+                                            BorderBrush="#4CAF50"
+                                            ToolTip="تحديد الكل"/>
+                                    <Button Content="✗" 
+                                            Command="{Binding DeselectAllEditCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#FFEBEE"
+                                            BorderBrush="#F44336"
+                                            ToolTip="إلغاء الكل"/>
+                                </StackPanel>
+
+                                <!-- View Column -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                                    <TextBlock Text="عرض:" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#666"/>
+                                    <Button Content="✓" 
+                                            Command="{Binding SelectAllViewCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#E8F5E9"
+                                            BorderBrush="#4CAF50"
+                                            ToolTip="تحديد الكل"/>
+                                    <Button Content="✗" 
+                                            Command="{Binding DeselectAllViewCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#FFEBEE"
+                                            BorderBrush="#F44336"
+                                            ToolTip="إلغاء الكل"/>
+                                </StackPanel>
+
+                                <!-- Delete Column -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                                    <TextBlock Text="حذف:" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#666"/>
+                                    <Button Content="✓" 
+                                            Command="{Binding SelectAllDeleteCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#E8F5E9"
+                                            BorderBrush="#4CAF50"
+                                            ToolTip="تحديد الكل"/>
+                                    <Button Content="✗" 
+                                            Command="{Binding DeselectAllDeleteCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#FFEBEE"
+                                            BorderBrush="#F44336"
+                                            ToolTip="إلغاء الكل"/>
+                                </StackPanel>
+
+                                <!-- Post Column -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                                    <TextBlock Text="ترحيل:" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#666"/>
+                                    <Button Content="✓" 
+                                            Command="{Binding SelectAllPostCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#E8F5E9"
+                                            BorderBrush="#4CAF50"
+                                            ToolTip="تحديد الكل"/>
+                                    <Button Content="✗" 
+                                            Command="{Binding DeselectAllPostCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#FFEBEE"
+                                            BorderBrush="#F44336"
+                                            ToolTip="إلغاء الكل"/>
+                                </StackPanel>
+
+                                <!-- Print Column -->
+                                <StackPanel Orientation="Horizontal" Margin="0,0,12,0">
+                                    <TextBlock Text="طباعة:" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0" Foreground="#666"/>
+                                    <Button Content="✓" 
+                                            Command="{Binding SelectAllPrintCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#E8F5E9"
+                                            BorderBrush="#4CAF50"
+                                            ToolTip="تحديد الكل"/>
+                                    <Button Content="✗" 
+                                            Command="{Binding DeselectAllPrintCommand}"
+                                            Width="24" Height="24"
+                                            FontSize="10"
+                                            Padding="0"
+                                            Margin="2,0"
+                                            Background="#FFEBEE"
+                                            BorderBrush="#F44336"
+                                            ToolTip="إلغاء الكل"/>
+                                </StackPanel>
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Permissions Table -->
+                    <Grid Height="200">
+                        <DataGrid ItemsSource="{Binding RolePermissions}"
+                                  Style="{StaticResource ModernDataGridStyle}"
+                                  ColumnHeaderStyle="{StaticResource DataGridHeaderStyle}"
+                                  ScrollViewer.CanContentScroll="True"
+                                  ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                  Visibility="{Binding IsLoadingRolePermissions, Converter={StaticResource InverseBooleanToVisibilityConverter}}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="القائمة" 
+                                                    Binding="{Binding MenuForm.MenuArabicName}" 
+                                                    Width="150"
+                                                    IsReadOnly="True"/>
+                                
+                                <DataGridCheckBoxColumn Header="إضافة" 
+                                                        Binding="{Binding AllowAdd}" 
+                                                        Width="60">
+                                    <DataGridCheckBoxColumn.ElementStyle>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CenteredCheckBoxStyle}"/>
+                                    </DataGridCheckBoxColumn.ElementStyle>
+                                </DataGridCheckBoxColumn>
+
+                                <DataGridCheckBoxColumn Header="تحرير" 
+                                                        Binding="{Binding AllowEdit}" 
+                                                        Width="60">
+                                    <DataGridCheckBoxColumn.ElementStyle>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CenteredCheckBoxStyle}"/>
+                                    </DataGridCheckBoxColumn.ElementStyle>
+                                </DataGridCheckBoxColumn>
+
+                                <DataGridCheckBoxColumn Header="عرض" 
+                                                        Binding="{Binding AllowView}" 
+                                                        Width="60">
+                                    <DataGridCheckBoxColumn.ElementStyle>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CenteredCheckBoxStyle}"/>
+                                    </DataGridCheckBoxColumn.ElementStyle>
+                                </DataGridCheckBoxColumn>
+
+                                <DataGridCheckBoxColumn Header="حذف" 
+                                                        Binding="{Binding AllowDelete}" 
+                                                        Width="60">
+                                    <DataGridCheckBoxColumn.ElementStyle>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CenteredCheckBoxStyle}"/>
+                                    </DataGridCheckBoxColumn.ElementStyle>
+                                </DataGridCheckBoxColumn>
+
+                                <DataGridCheckBoxColumn Header="ترحيل" 
+                                                        Binding="{Binding AllowPost}" 
+                                                        Width="60">
+                                    <DataGridCheckBoxColumn.ElementStyle>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CenteredCheckBoxStyle}"/>
+                                    </DataGridCheckBoxColumn.ElementStyle>
+                                </DataGridCheckBoxColumn>
+
+                                <DataGridCheckBoxColumn Header="طباعة" 
+                                                        Binding="{Binding AllowPrint}" 
+                                                        Width="60">
+                                    <DataGridCheckBoxColumn.ElementStyle>
+                                        <Style TargetType="CheckBox" BasedOn="{StaticResource CenteredCheckBoxStyle}"/>
+                                    </DataGridCheckBoxColumn.ElementStyle>
+                                </DataGridCheckBoxColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        
+                        <!-- Loading Overlay for Role Permissions -->
+                        <Border Style="{StaticResource LoadingOverlayStyle}"
+                                Visibility="{Binding IsLoadingRolePermissions, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel>
+                                <ProgressBar IsIndeterminate="True" Width="100" Height="4" 
+                                             Background="#E0E0E0" Foreground="#007ACC"/>
+                                <TextBlock Text="تحميل صلاحيات الدور..." Style="{StaticResource LoadingTextStyle}"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- No Data Message -->
+                        <Border Style="{StaticResource LoadingOverlayStyle}"
+                                Background="#F8F9FA"
+                                Visibility="{Binding CurrentUserRoleContext, Converter={StaticResource StringToVisibilityConverter}, ConverterParameter='يرجى اختيار مستخدم ودور لعرض الصلاحيات'}">
+                            <StackPanel>
+                                <TextBlock Text="📋" FontSize="24" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                <TextBlock Text="يرجى اختيار مستخدم ودور من القوائم الجانبية" 
+                                           Style="{StaticResource LoadingTextStyle}"
+                                           Foreground="#666"/>
+                                <TextBlock Text="لعرض وتحرير الصلاحيات" 
+                                           Style="{StaticResource LoadingTextStyle}"
+                                           Foreground="#666"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    
+                    <!-- Save Permissions Button -->
+                    <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                        <Button Content="حفظ الصلاحيات" 
+                                Command="{Binding SaveRolePermissionsCommand}"
+                                Style="{StaticResource ActionButtonStyle}"
+                                IsEnabled="{Binding CanSaveRolePermissions}"/>
+                        
+                        <TextBlock Text="{Binding CurrentUserRoleContext}" 
+                                   FontSize="10" 
+                                   Foreground="#666" 
+                                   VerticalAlignment="Center"
+                                   Margin="12,0,0,0"
+                                   Visibility="{Binding CurrentUserRoleContext, Converter={StaticResource StringToVisibilityConverter}}"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <!-- Role Management Dialog -->
+        <Popup x:Name="AddRolePopup"
+               IsOpen="{Binding IsAddingRole}"
+               Placement="Absolute"
+               AllowsTransparency="True"
+               PopupAnimation="Fade"
+               
+               StaysOpen="True">
+            <Border Background="White" 
+                    BorderBrush="#333" 
+                    BorderThickness="2" 
+                    CornerRadius="8"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Padding="20"
+                    Width="420"
+                    Height="300">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Direction="315" ShadowDepth="8" BlurRadius="15" Opacity="0.4"/>
+                </Border.Effect>
+            
+            <StackPanel>
+                <TextBlock Text="إضافة دور جديد" 
+                           FontSize="16" 
+                           FontWeight="Bold" 
+                           Margin="0,0,0,20"
+                           HorizontalAlignment="Center"/>
+                
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                               Text="اسم الدور:" 
+                               VerticalAlignment="Center" 
+                               Margin="0,0,10,0"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" 
+                             Text="{Binding NewRole.Name}" 
+                             Padding="5"
+                             Margin="0,0,0,10"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               Text="نوع الدور:" 
+                               VerticalAlignment="Center" 
+                               Margin="0,0,10,0"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" 
+                              SelectedValue="{Binding NewRole.RollType}"
+                              SelectedValuePath="Tag"
+                              Margin="0,0,0,20">
+                        <ComboBoxItem Content="إداري" Tag="1"/>
+                        <ComboBoxItem Content="محاسب" Tag="2"/>
+                        <ComboBoxItem Content="مستخدم" Tag="3"/>
+                    </ComboBox>
+
+                    <StackPanel Grid.Row="5" Grid.ColumnSpan="2" 
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Center"
+                                Margin="0,20,0,0">
+                        <Button Content="حفظ" 
+                                Command="{Binding AddRoleCommand}"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Margin="0,0,10,0"/>
+                        <Button Content="إلغاء" 
+                                Command="{Binding CancelRoleEditCommand}"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Background="#6C757D"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+            </Border>
+        </Popup>
+
+        <!-- Edit Role Dialog -->
+        <Popup x:Name="EditRolePopup"
+               IsOpen="{Binding IsEditingRole}"
+               Placement="Absolute"
+               AllowsTransparency="True"
+               PopupAnimation="Fade"
+               StaysOpen="True">
+            <Border Background="White" 
+                    BorderBrush="#333" 
+                    BorderThickness="2" 
+                    CornerRadius="8"
+                    Padding="20"
+                    Width="420"
+                    Height="300">
+                <Border.Effect>
+                    <DropShadowEffect Color="Black" Direction="315" ShadowDepth="8" BlurRadius="15" Opacity="0.4"/>
+                </Border.Effect>
+            
+            <StackPanel>
+                <TextBlock Text="تعديل الدور" 
+                           FontSize="16" 
+                           FontWeight="Bold" 
+                           Margin="0,0,0,20"
+                           HorizontalAlignment="Center"/>
+                
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" 
+                               Text="اسم الدور:" 
+                               VerticalAlignment="Center" 
+                               Margin="0,0,10,0"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" 
+                             Text="{Binding NewRole.Name}" 
+                             Padding="5"
+                             Margin="0,0,0,10"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" 
+                               Text="نوع الدور:" 
+                               VerticalAlignment="Center" 
+                               Margin="0,0,10,0"/>
+                    <ComboBox Grid.Row="1" Grid.Column="1" 
+                              SelectedValue="{Binding NewRole.RollType}"
+                              SelectedValuePath="Tag"
+                              Margin="0,0,0,20">
+                        <ComboBoxItem Content="إداري" Tag="1"/>
+                        <ComboBoxItem Content="محاسب" Tag="2"/>
+                        <ComboBoxItem Content="مستخدم" Tag="3"/>
+                    </ComboBox>
+
+                    <StackPanel Grid.Row="5" Grid.ColumnSpan="2" 
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Center"
+                                Margin="0,20,0,0">
+                        <Button Content="حفظ التغييرات" 
+                                Command="{Binding EditRoleCommand}"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Margin="0,0,10,0"/>
+                        <Button Content="إلغاء" 
+                                Command="{Binding CancelRoleEditCommand}"
+                                Style="{StaticResource ActionButtonStyle}"
+                                Background="#6C757D"/>
+                    </StackPanel>
+                </Grid>
+            </StackPanel>
+            </Border>
+        </Popup>
+
+        <!-- Background Overlay for Dialogs -->
+        <Grid Visibility="{Binding IsAddingRole, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Panel.ZIndex="98"
+              Background="Black"
+              Opacity="0.6">
+        </Grid>
+        
+        <Grid Visibility="{Binding IsEditingRole, Converter={StaticResource BooleanToVisibilityConverter}}"
+              Panel.ZIndex="98"
+              Background="Black"
+              Opacity="0.6">
+        </Grid>
+    </Grid>
+</Page>

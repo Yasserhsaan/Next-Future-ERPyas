@@ -1,0 +1,92 @@
+<UserControl x:Class="Next_Future_ERP.Features.StoreIssues.Views.IssueDestinationsView"
+              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:core="clr-namespace:Next_Future_ERP.Core.Controls"
+              xmlns:converters="clr-namespace:Next_Future_ERP.Features.StoreIssues.Converters"
+              mc:Ignorable="d"
+              FlowDirection="RightToLeft"
+              Background="#F7F9FC">
+
+    <UserControl.Resources>
+        <!-- Common Converters -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        
+        <!-- Styles -->
+        <Style TargetType="Button" x:Key="ToolbarBtn">
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+        </Style>
+        <Style TargetType="DataGrid">
+            <Setter Property="RowHeight" Value="36"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="AlternatingRowBackground" Value="#FAFAFA"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+        </Style>
+    </UserControl.Resources>
+
+    <DockPanel Margin="12">
+        <!-- شريط أدوات -->
+        <Border DockPanel.Dock="Top" Background="#F3F4F6" CornerRadius="8" Padding="10" Margin="0,0,0,10">
+            <DockPanel LastChildFill="False">
+                <core:CommandBar DockPanel.Dock="Top"
+                                 NewCommand="{Binding AddNewCommand}"
+                                 EditCommand="{Binding EditSelectedCommand}"
+                                 SaveCommand="{x:Null}"
+                                 DeleteCommand="{Binding DeleteSelectedAsyncCommand}"
+                                 RefreshCommand="{Binding LoadAsyncCommand}"
+                                 SearchCommand="{Binding SearchAsyncCommand}" />
+                <Button Content="📊 بيانات افتراضية" 
+                        Command="{Binding LoadSampleDataAsyncCommand}" 
+                        Width="Auto" 
+                        Style="{StaticResource ToolbarBtn}"/>
+            </DockPanel>
+        </Border>
+
+        <!-- القائمة -->
+        <DataGrid ItemsSource="{Binding Destinations}"
+                  SelectedItem="{Binding SelectedDestination, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
+                  MouseDoubleClick="DataGrid_MouseDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="الكود" 
+                                    Binding="{Binding DestinationCode}" 
+                                    Width="120"/>
+                
+                <DataGridTextColumn Header="الاسم" 
+                                    Binding="{Binding DestinationName}" 
+                                    Width="*"/>
+                
+                <DataGridTextColumn Header="النوع" 
+                                    Binding="{Binding DestinationTypeText}" 
+                                    Width="120"/>
+                
+                <DataGridTextColumn Header="الحساب" 
+                                    Binding="{Binding AccountName}" 
+                                    Width="150"/>
+                
+                <DataGridTextColumn Header="مركز الكلفة" 
+                                    Binding="{Binding CostCenterName}" 
+                                    Width="150"/>
+                
+                <DataGridTextColumn Header="السياسات" 
+                                    Binding="{Binding PoliciesText}" 
+                                    Width="200"/>
+                
+                <DataGridTextColumn Header="الحالة" 
+                                    Binding="{Binding StatusText}" 
+                                    Width="100"/>
+            </DataGrid.Columns>
+            
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="تعديل" Command="{Binding DataContext.EditSelectedCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                    <MenuItem Header="حذف" Command="{Binding DataContext.DeleteSelectedAsyncCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

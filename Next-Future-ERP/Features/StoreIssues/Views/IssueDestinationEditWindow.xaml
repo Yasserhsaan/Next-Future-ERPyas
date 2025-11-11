@@ -1,0 +1,223 @@
+<ui:FluentWindow
+    x:Class="Next_Future_ERP.Features.StoreIssues.Views.IssueDestinationEditWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:controls="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+    mc:Ignorable="d"
+    Title="{Binding WindowTitle}"
+    Height="600" Width="900"
+    FlowDirection="RightToLeft"
+    WindowStartupLocation="CenterOwner"
+    ResizeMode="CanResizeWithGrip"
+    UseLayoutRounding="True"
+    SnapsToDevicePixels="True"
+    FontSize="14"
+    Loaded="Window_Loaded">
+
+    <!-- موارد بسيطة وآمنة -->
+    <ui:FluentWindow.Resources>
+        <Style TargetType="TextBlock" x:Key="Label">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <!-- أيقونات MDL2 -->
+        <Style x:Key="IconText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <!-- Common Converters -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </ui:FluentWindow.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- شريط علوي -->
+        <controls:Card Grid.Row="0" Padding="12" Margin="0,0,0,12">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button Padding="14,10" Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE74E;"/>
+                            <!-- Save -->
+                            <TextBlock Text="حفظ" FontSize="15"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="14,10" Margin="8,0,0,0" Command="{Binding CancelCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE711;"/>
+                            <!-- Cancel -->
+                            <TextBlock Text="إلغاء" FontSize="15"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </controls:Card>
+
+        <!-- المحتوى الرئيسي -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <TabControl>
+                <!-- تبويب المعلومات العامة -->
+                <TabItem Header="المعلومات العامة">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- الكود -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="الكود" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" 
+                                     Text="{Binding Model.DestinationCode, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- الاسم -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="الاسم" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" 
+                                     Text="{Binding Model.DestinationName, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- النوع -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="النوع" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1"
+                                      ItemsSource="{Binding DestinationTypeOptions}"
+                                      SelectedValuePath="Value"
+                                      DisplayMemberPath="Text"
+                                      SelectedValue="{Binding Model.DestinationType, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- الوصف -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="الوصف" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" 
+                                     Text="{Binding Model.Description, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" TextWrapping="Wrap" Height="60"
+                                     Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+
+                <!-- تبويب الربط المحاسبي -->
+                <TabItem Header="الربط المحاسبي">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- الحساب الافتراضي -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="الحساب الافتراضي" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1"
+                                      ItemsSource="{Binding Accounts}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountId"
+                                      SelectedValue="{Binding Model.AccountID, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- مركز الكلفة الافتراضي -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="مركز الكلفة الافتراضي" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1"
+                                      ItemsSource="{Binding CostCenters}"
+                                      DisplayMemberPath="CostCenterName"
+                                      SelectedValuePath="CostCenterID"
+                                      SelectedValue="{Binding Model.CostCenterID, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+
+                <!-- تبويب السياسات -->
+                <TabItem Header="السياسات">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- استخدام مركز الكلفة -->
+                            <CheckBox Grid.Row="0" Grid.Column="1" 
+                                      IsChecked="{Binding Model.UsesCostCenter, Mode=TwoWay}" 
+                                      Content="استخدام مركز الكلفة" VerticalAlignment="Center" Margin="0,0,0,12"/>
+
+                            <!-- السماح بتجاوز الحساب -->
+                            <CheckBox Grid.Row="1" Grid.Column="1" 
+                                      IsChecked="{Binding Model.AllowAccountOverride, Mode=TwoWay}" 
+                                      Content="السماح بتجاوز الحساب" VerticalAlignment="Center" Margin="0,0,0,12"/>
+
+                            <!-- السماح بتجاوز السطر -->
+                            <CheckBox Grid.Row="2" Grid.Column="1" 
+                                      IsChecked="{Binding Model.AllowLineOverride, Mode=TwoWay}" 
+                                      Content="السماح بتجاوز السطر" VerticalAlignment="Center" Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+
+                <!-- تبويب الحالة -->
+                <TabItem Header="الحالة">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- مفعل -->
+                            <CheckBox Grid.Row="0" Grid.Column="1" 
+                                      IsChecked="{Binding Model.IsActive, Mode=TwoWay}" 
+                                      Content="مفعل" VerticalAlignment="Center" Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+
+        <!-- Loading Indicator -->
+        <Grid Grid.Row="0" Grid.RowSpan="2" 
+              Background="#80000000" 
+              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Background="White" 
+                    Padding="20" 
+                    CornerRadius="8">
+                <StackPanel>
+                    <TextBlock Text="جاري التحميل..." 
+                               HorizontalAlignment="Center" 
+                               FontSize="16" 
+                               Foreground="#374151"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>

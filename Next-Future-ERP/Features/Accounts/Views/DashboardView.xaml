@@ -1,0 +1,410 @@
+﻿<Page x:Class="Next_Future_ERP.Features.Accounts.Views.DashboardView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:vm="clr-namespace:Next_Future_ERP.Features.Dashboard.ViewModels"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      FlowDirection="RightToLeft"
+      Background="#F8F9FB">
+
+    <!-- DataContext سيتم تعيينه من الكود الخلفي أو من خلال DI -->
+
+    <Page.Resources>
+        <!-- ألوان النظام -->
+        <SolidColorBrush x:Key="PrimaryColor" Color="#0A6ED1"/>
+        <SolidColorBrush x:Key="SuccessColor" Color="#10B981"/>
+        <SolidColorBrush x:Key="WarningColor" Color="#F59E0B"/>
+        <SolidColorBrush x:Key="DangerColor" Color="#EF4444"/>
+        <SolidColorBrush x:Key="InfoColor" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="CardBackground" Color="White"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#1F2937"/>
+        <SolidColorBrush x:Key="TextSecondary" Color="#6B7280"/>
+        <SolidColorBrush x:Key="BorderColor" Color="#E5E7EB"/>
+
+        <!-- ستايل البطاقات -->
+        <Style x:Key="DashboardCard" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="20"/>
+            <Setter Property="Margin" Value="8"/>
+        </Style>
+
+        <!-- ستايل بطاقات الإحصائيات -->
+        <Style x:Key="StatCard" TargetType="Border" BasedOn="{StaticResource DashboardCard}">
+            <Setter Property="MinWidth" Value="200"/>
+            <Setter Property="MinHeight" Value="120"/>
+        </Style>
+
+        <!-- ستايل الأيقونات -->
+        <Style x:Key="StatIcon" TargetType="Border">
+            <Setter Property="Width" Value="48"/>
+            <Setter Property="Height" Value="48"/>
+            <Setter Property="Margin" Value="0,0,16,0"/>
+        </Style>
+
+        <!-- ستايل الأزرار السريعة -->
+        <Style x:Key="QuickActionButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource CardBackground}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderColor}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Margin" Value="8"/>
+            <Setter Property="MinWidth" Value="180"/>
+            <Setter Property="MinHeight" Value="100"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="8"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#F9FAFB"/>
+                                <Setter TargetName="Root" Property="BorderBrush" Value="{StaticResource PrimaryColor}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#F3F4F6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- ستايل العناوين -->
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Margin" Value="0,0,0,16"/>
+        </Style>
+
+        <!-- ستايل النصوص الكبيرة -->
+        <Style x:Key="LargeNumber" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="32"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+        </Style>
+
+        <!-- ستايل النصوص الصغيرة -->
+        <Style x:Key="SmallText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondary}"/>
+        </Style>
+    </Page.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+            
+            <!-- ترحيب -->
+            <Border Style="{StaticResource DashboardCard}" 
+                    CornerRadius="8" 
+                    Margin="0,0,0,24">
+                <Border.Effect>
+                    <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="مرحباً بك في نظام Next Future ERP" 
+                               FontSize="24" FontWeight="Bold" 
+                               Foreground="{StaticResource TextPrimary}" Margin="0,0,0,8"/>
+                    <TextBlock Text="مرحباً بك في نظام إدارة الموارد المؤسسية" 
+                               FontSize="16" 
+                               Foreground="{StaticResource TextSecondary}"/>
+            </StackPanel>
+            </Border>
+
+            <!-- إحصائيات سريعة -->
+            <TextBlock Text="الإحصائيات السريعة" Style="{StaticResource SectionTitle}"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- إجمالي المبيعات -->
+                <Border Grid.Column="0" Style="{StaticResource StatCard}" CornerRadius="8">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Style="{StaticResource StatIcon}" Background="#EFF6FF" BorderBrush="#BFDBFE" CornerRadius="12">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" 
+                                       Foreground="{StaticResource PrimaryColor}" 
+                                       Text="&#xE8A5;" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="إجمالي المبيعات" Style="{StaticResource SmallText}"/>
+                            <TextBlock Text="1,250,000" Style="{StaticResource LargeNumber}"/>
+                            <TextBlock Text="ريال سعودي" Style="{StaticResource SmallText}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- إجمالي المشتريات -->
+                <Border Grid.Column="1" Style="{StaticResource StatCard}" CornerRadius="8">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Style="{StaticResource StatIcon}" Background="#F0FDF4" BorderBrush="#BBF7D0" CornerRadius="12">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" 
+                                       Foreground="{StaticResource SuccessColor}" 
+                                       Text="&#xE7BF;" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="إجمالي المشتريات" Style="{StaticResource SmallText}"/>
+                            <TextBlock Text="890,000" Style="{StaticResource LargeNumber}"/>
+                            <TextBlock Text="ريال سعودي" Style="{StaticResource SmallText}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- عدد العملاء -->
+                <Border Grid.Column="2" Style="{StaticResource StatCard}" CornerRadius="8">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                        <StackPanel Orientation="Horizontal">
+                        <Border Style="{StaticResource StatIcon}" Background="#FEF3C7" BorderBrush="#FDE68A" CornerRadius="12">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" 
+                                       Foreground="{StaticResource WarningColor}" 
+                                       Text="&#xE716;" 
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel>
+                            <TextBlock Text="عدد العملاء" Style="{StaticResource SmallText}"/>
+                            <TextBlock Text="156" Style="{StaticResource LargeNumber}"/>
+                            <TextBlock Text="عميل" Style="{StaticResource SmallText}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- عدد الموردين -->
+                <Border Grid.Column="3" Style="{StaticResource StatCard}" CornerRadius="8">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                        <StackPanel Orientation="Horizontal">
+                        <Border Style="{StaticResource StatIcon}" Background="#FEE2E2" BorderBrush="#FECACA" CornerRadius="12">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="24" 
+                                       Foreground="{StaticResource DangerColor}" 
+                                       Text="&#xE8A5;" 
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <StackPanel>
+                            <TextBlock Text="عدد الموردين" Style="{StaticResource SmallText}"/>
+                            <TextBlock Text="45" Style="{StaticResource LargeNumber}"/>
+                            <TextBlock Text="مورد" Style="{StaticResource SmallText}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- الإجراءات السريعة -->
+            <TextBlock Text="الإجراءات السريعة" Style="{StaticResource SectionTitle}" Margin="0,32,0,0"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- إضافة عميل جديد -->
+                <Button Grid.Row="0" Grid.Column="0" Style="{StaticResource QuickActionButton}">
+                    <StackPanel>
+                        <Border Style="{StaticResource StatIcon}" Background="#EFF6FF" BorderBrush="#BFDBFE" CornerRadius="12" Margin="0,0,0,8">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                                       Foreground="{StaticResource PrimaryColor}" 
+                                       Text="&#xE716;" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="إضافة عميل جديد" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- إضافة مورد جديد -->
+                <Button Grid.Row="0" Grid.Column="1" Style="{StaticResource QuickActionButton}">
+                    <StackPanel>
+                        <Border Style="{StaticResource StatIcon}" Background="#F0FDF4" BorderBrush="#BBF7D0" CornerRadius="12" Margin="0,0,0,8">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                                       Foreground="{StaticResource SuccessColor}" 
+                                       Text="&#xE8A5;" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="إضافة مورد جديد" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- إضافة صنف جديد -->
+                <Button Grid.Row="0" Grid.Column="2" Style="{StaticResource QuickActionButton}">
+                    <StackPanel>
+                        <Border Style="{StaticResource StatIcon}" Background="#FEF3C7" BorderBrush="#FDE68A" CornerRadius="12" Margin="0,0,0,8">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                                       Foreground="{StaticResource WarningColor}" 
+                                           Text="&#xE7BF;"  
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                        <TextBlock Text="إضافة صنف جديد" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- إنشاء فاتورة مبيعات -->
+                <Button Grid.Row="0" Grid.Column="3" Style="{StaticResource QuickActionButton}">
+                            <StackPanel>
+                        <Border Style="{StaticResource StatIcon}" Background="#FEE2E2" BorderBrush="#FECACA" CornerRadius="12" Margin="0,0,0,8">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                                       Foreground="{StaticResource DangerColor}" 
+                                       Text="&#xE710;" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="إنشاء فاتورة مبيعات" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                </Button>
+
+                <!-- إنشاء أمر شراء -->
+                <Button Grid.Row="1" Grid.Column="0" Style="{StaticResource QuickActionButton}">
+                    <StackPanel>
+                        <Border Style="{StaticResource StatIcon}" Background="#EFF6FF" BorderBrush="#BFDBFE" CornerRadius="12" Margin="0,0,0,8">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                                       Foreground="{StaticResource PrimaryColor}" 
+                                       Text="&#xE8A5;" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="إنشاء أمر شراء" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                </Button>
+
+                <!-- سند قبض -->
+                <Button Grid.Row="1" Grid.Column="1" Style="{StaticResource QuickActionButton}">
+                    <StackPanel>
+                        <Border Style="{StaticResource StatIcon}" Background="#F0FDF4" BorderBrush="#BBF7D0" CornerRadius="12" Margin="0,0,0,8">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                                       Foreground="{StaticResource SuccessColor}" 
+                                       Text="&#xE8A5;" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="سند قبض" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- سند دفع -->
+                <Button Grid.Row="1" Grid.Column="2" Style="{StaticResource QuickActionButton}">
+                    <StackPanel>
+                        <Border Style="{StaticResource StatIcon}" Background="#FEF3C7" BorderBrush="#FDE68A" CornerRadius="12" Margin="0,0,0,8">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                                       Foreground="{StaticResource WarningColor}" 
+                                       Text="&#xE8A5;" 
+                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Border>
+                        <TextBlock Text="سند دفع" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <!-- تقرير مالي -->
+                <Button Grid.Row="1" Grid.Column="3" Style="{StaticResource QuickActionButton}">
+                    <StackPanel>
+                        <Border Style="{StaticResource StatIcon}" Background="#FEE2E2" BorderBrush="#FECACA" CornerRadius="12" Margin="0,0,0,8">
+                            <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" 
+                                       Foreground="{StaticResource DangerColor}" 
+                                           Text="&#xE8A5;" 
+                                           VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                        <TextBlock Text="تقرير مالي" FontWeight="SemiBold" HorizontalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- التنبيهات والمهام -->
+            <Grid Margin="0,32,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- التنبيهات -->
+                <Border Grid.Column="0" Style="{StaticResource DashboardCard}" CornerRadius="8" Margin="0,0,8,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="التنبيهات المهمة" Style="{StaticResource SectionTitle}"/>
+                        <Border Background="#FEF2F2" BorderBrush="#FECACA" 
+                                BorderThickness="1" CornerRadius="4" 
+                                Padding="12" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="تنبيه مهم" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource DangerColor}"/>
+                                <TextBlock Text="يوجد 5 فواتير مبيعات معلقة تحتاج للمراجعة" Style="{StaticResource SmallText}" 
+                                           Margin="0,4,0,0"/>
+                                <TextBlock Text="منذ ساعتين" Style="{StaticResource SmallText}" 
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                            </Border>
+                        <Border Background="#F0F9FF" BorderBrush="#BAE6FD" 
+                                BorderThickness="1" CornerRadius="4" 
+                                Padding="12" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="تذكير" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource InfoColor}"/>
+                                <TextBlock Text="موعد استحقاق فاتورة مورد رقم INV-2024-001 غداً" Style="{StaticResource SmallText}" 
+                                           Margin="0,4,0,0"/>
+                                <TextBlock Text="منذ ساعة" Style="{StaticResource SmallText}" 
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        </StackPanel>
+                </Border>
+
+                <!-- المهام المعلقة -->
+                <Border Grid.Column="1" Style="{StaticResource DashboardCard}" CornerRadius="8" Margin="8,0,0,0">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#000000" Opacity="0.1" BlurRadius="10" ShadowDepth="2"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="المهام المعلقة" Style="{StaticResource SectionTitle}"/>
+                        <Border Background="#F0F9FF" BorderBrush="#BAE6FD" 
+                                BorderThickness="1" CornerRadius="4" 
+                                Padding="12" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="مراجعة فواتير المبيعات" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource InfoColor}"/>
+                                <TextBlock Text="مراجعة 5 فواتير مبيعات معلقة" Style="{StaticResource SmallText}" 
+                                           Margin="0,4,0,0"/>
+                                <TextBlock Text="غداً" Style="{StaticResource SmallText}" 
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                            </Border>
+                        <Border Background="#F0F9FF" BorderBrush="#BAE6FD" 
+                                BorderThickness="1" CornerRadius="4" 
+                                Padding="12" Margin="0,0,0,8">
+                            <StackPanel>
+                                <TextBlock Text="تحديث أسعار الأصناف" FontWeight="SemiBold" 
+                                           Foreground="{StaticResource InfoColor}"/>
+                                <TextBlock Text="تحديث أسعار الأصناف حسب السوق" Style="{StaticResource SmallText}" 
+                                           Margin="0,4,0,0"/>
+                                <TextBlock Text="خلال أسبوع" Style="{StaticResource SmallText}" 
+                                           Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        </StackPanel>
+                </Border>
+            </Grid>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>

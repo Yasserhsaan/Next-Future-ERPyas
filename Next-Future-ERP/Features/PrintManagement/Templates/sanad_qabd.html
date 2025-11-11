@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="ar">
+<head><meta charset="utf-8"><title>سند قبض</title>
+<style>body {font-family: Arial; direction: rtl; margin: 18px;} table{width:100%}</style>
+</head><body>
+  <h2 style="text-align:center;">سند قبض</h2>
+  <div>رقم السند: {{receipt.number}} &nbsp; | &nbsp; التاريخ: {{receipt.date}}</div>
+  <div>استلمنا من: <strong>{{payer.name}}</strong></div>
+  <div>مبلغ: <strong>{{receipt.amount}}</strong> ({{currency}})</div>
+  <div>طريقة الدفع: {{receipt.method}}</div>
+  <div style="margin-top:10px;">البيان: {{receipt.description}}</div>
+  <div style="margin-top:30px;">توقيع المستلم: ________________</div>
+</body></html>

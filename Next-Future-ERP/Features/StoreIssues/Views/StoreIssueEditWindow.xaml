@@ -1,0 +1,369 @@
+<ui:FluentWindow
+    x:Class="Next_Future_ERP.Features.StoreIssues.Views.StoreIssueEditWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:controls="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+    xmlns:vm="clr-namespace:Next_Future_ERP.Features.StoreIssues.ViewModels"
+    mc:Ignorable="d"
+    Title="{Binding WindowTitle}"
+    Height="700" Width="1200"
+    MinWidth="980" MinHeight="600"
+    FlowDirection="RightToLeft"
+    WindowStartupLocation="CenterOwner"
+    ResizeMode="CanResizeWithGrip"
+    UseLayoutRounding="True"
+    SnapsToDevicePixels="True"
+    FontSize="14"
+    Background="#F6F7F9"
+    d:DataContext="{d:DesignInstance vm:StoreIssueEditViewModel}">
+
+    <!-- اختصارات لوحة المفاتيح -->
+    <ui:FluentWindow.InputBindings>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveAsyncCommand}"/>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
+    </ui:FluentWindow.InputBindings>
+
+    <!-- موارد بسيطة وآمنة -->
+    <ui:FluentWindow.Resources>
+        <Style TargetType="TextBlock" x:Key="Label">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        
+        <Style TargetType="Button" x:Key="ToolbarBtn">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.8"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Opacity" Value="0.6"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- Converter للتحويل من Boolean إلى Visibility -->
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+    </ui:FluentWindow.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <!-- شريط علوي محسن -->
+        <Border Grid.Row="0" Background="White" CornerRadius="12" Padding="16" Margin="0,0,0,12"
+                BorderBrush="#E6EAF0" BorderThickness="1">
+            <Border.Effect>
+                <DropShadowEffect Color="#1F000000" BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+            </Border.Effect>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- عنوان + رقم المستند + شارة الحالة -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding WindowTitle}" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    
+                    <Border CornerRadius="12" Padding="8,3" Background="#F1F5F9" BorderBrush="#E5E7EB" BorderThickness="1" 
+                            Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Model.IssueNumber}" FontSize="12" Foreground="#374151"/>
+                    </Border>
+
+                    <!-- شارة الحالة -->
+                    <Border CornerRadius="12" Padding="8,3" Background="#FEF3C7" BorderBrush="#F59E0B" BorderThickness="1" 
+                            Margin="8,0,0,0" VerticalAlignment="Center">
+                        <TextBlock FontSize="12" FontWeight="SemiBold" Text="{Binding Model.StatusText}" Foreground="#92400E"/>
+                    </Border>
+                </StackPanel>
+
+                <!-- أزرار الإجراءات -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="حفظ" Command="{Binding SaveAsyncCommand}" IsEnabled="{Binding CanSave}" 
+                            Style="{StaticResource ToolbarBtn}" Background="#10B981" Foreground="White" Margin="0,0,8,0"/>
+                    <Button Content="ترحيل" Command="{Binding PostAsyncCommand}" IsEnabled="{Binding CanPost}" 
+                            Style="{StaticResource ToolbarBtn}" Background="#3B82F6" Foreground="White" Margin="0,0,8,0"/>
+                    <Button Content="إلغاء" Command="{Binding CancelCommand}" 
+                            Style="{StaticResource ToolbarBtn}" Background="#6B7280" Foreground="White"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- المحتوى الرئيسي -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="14"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="14"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- بطاقة: الهيدر -->
+                <Border Grid.Row="0" Background="White" CornerRadius="12" Padding="16" 
+                        BorderBrush="#E6EAF0" BorderThickness="1">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#1F000000" BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                    </Border.Effect>
+                    
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- رقم المستند -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="رقم المستند" Style="{StaticResource Label}"/>
+                        <TextBox Grid.Row="0" Grid.Column="1" 
+                                 Text="{Binding Model.IssueNumber, UpdateSourceTrigger=PropertyChanged}"
+                                 IsReadOnly="{Binding IsEditMode}"
+                                 Margin="0,0,0,12"/>
+
+                        <!-- تاريخ المستند -->
+                        <TextBlock Grid.Row="0" Grid.Column="2" Text="تاريخ المستند" Style="{StaticResource Label}"/>
+                        <DatePicker Grid.Row="0" Grid.Column="3" 
+                                    SelectedDate="{Binding Model.IssueDate, UpdateSourceTrigger=PropertyChanged}"
+                                    Margin="0,0,0,12"/>
+
+                        <!-- جهة الصرف -->
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="جهة الصرف" Style="{StaticResource Label}"/>
+                        <ComboBox Grid.Row="1" Grid.Column="1"
+                                  ItemsSource="{Binding Destinations}"
+                                  DisplayMemberPath="DestinationName"
+                                  SelectedValuePath="DestinationID"
+                                  SelectedValue="{Binding Model.IssueDestinationID, Mode=TwoWay}"
+                                  Margin="0,0,0,12"
+                                  IsEnabled="{Binding !IsLoading}"
+                                  SelectionChanged="ComboBox_SelectionChanged"/>
+
+                        <!-- المخزن الافتراضي -->
+                        <TextBlock Grid.Row="1" Grid.Column="2" Text="المخزن الافتراضي" Style="{StaticResource Label}"/>
+                        <ComboBox Grid.Row="1" Grid.Column="3"
+                                  ItemsSource="{Binding Warehouses}"
+                                  DisplayMemberPath="WarehouseName"
+                                  SelectedValuePath="WarehouseID"
+                                  SelectedValue="{Binding Model.DefaultWarehouseId, Mode=TwoWay}"
+                                  Margin="0,0,0,12"
+                                  IsEnabled="{Binding !IsLoading}"
+                                  SelectionChanged="ComboBox_SelectionChanged"/>
+
+                        <!-- العملة -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="العملة" Style="{StaticResource Label}"/>
+                        <ComboBox Grid.Row="2" Grid.Column="1"
+                                  ItemsSource="{Binding Currencies}"
+                                  DisplayMemberPath="CurrencyNameAr"
+                                  SelectedValuePath="CurrencyId"
+                                  SelectedValue="{Binding Model.CurrencyId, Mode=TwoWay}"
+                                  Margin="0,0,0,12"
+                                  IsEnabled="{Binding !IsLoading}"/>
+
+                        <!-- سعر الصرف -->
+                        <TextBlock Grid.Row="2" Grid.Column="2" Text="سعر الصرف" Style="{StaticResource Label}"/>
+                        <TextBox Grid.Row="2" Grid.Column="3" 
+                                 Text="{Binding Model.ExchangeRate, StringFormat={}{0:N6}, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,0,0,12"/>
+
+                        <!-- المرجع -->
+                        <TextBlock Grid.Row="3" Grid.Column="0" Text="المرجع" Style="{StaticResource Label}"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" 
+                                 Text="{Binding Model.ReferenceNumber, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="0,0,0,12"/>
+
+                        <!-- المبلغ الإجمالي -->
+                        <TextBlock Grid.Row="3" Grid.Column="2" Text="المبلغ الإجمالي" Style="{StaticResource Label}"/>
+                        <TextBlock Grid.Row="3" Grid.Column="3" 
+                                   Text="{Binding Model.TotalAmount, StringFormat={}{0:N2}}" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="#059669"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,0,12"/>
+
+                        <!-- الحالة -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="الحالة" Style="{StaticResource Label}"/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" 
+                                   Text="{Binding Model.StatusText}" 
+                                   FontWeight="SemiBold" 
+                                   Foreground="{Binding Model.StatusColor}"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,0,12"/>
+
+                        <!-- الوصف -->
+                        <TextBlock Grid.Row="5" Grid.Column="0" Text="الوصف" Style="{StaticResource Label}"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="3"
+                                 Text="{Binding Model.Description, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="True" TextWrapping="Wrap" Height="60"
+                                 Margin="0,0,0,12"/>
+                    </Grid>
+                </Border>
+
+                <!-- بطاقة: التفاصيل -->
+                <Border Grid.Row="2" Background="White" CornerRadius="12" Padding="16" 
+                        BorderBrush="#E6EAF0" BorderThickness="1">
+                    <Border.Effect>
+                        <DropShadowEffect Color="#1F000000" BlurRadius="8" ShadowDepth="1" Opacity="0.1"/>
+                    </Border.Effect>
+                    
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- عنوان التفاصيل -->
+                        <TextBlock Grid.Row="0" Text="تفاصيل الصرف" Style="{StaticResource Label}" Margin="0,0,0,12"/>
+
+                        <!-- أزرار التحكم -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,12">
+                            <Button Content="➕ إضافة تفصيل" 
+                                    Command="{Binding AddDetailCommand}"
+                                    Style="{StaticResource ToolbarBtn}"
+                                    Background="#10B981"
+                                    Foreground="White"
+                                    Padding="12,6"
+                                    BorderThickness="0"
+                                    ToolTip="إضافة تفصيل جديد للمستند"
+                                    IsEnabled="{Binding CanAddDetail}"/>
+                            <Button Content="🧪 اختبار" 
+                                    Click="TestButton_Click"
+                                    Style="{StaticResource ToolbarBtn}"
+                                    Background="#8B5CF6"
+                                    Foreground="White"
+                                    Padding="12,6"
+                                    Margin="6,0,0,0"
+                                    BorderThickness="0"
+                                    ToolTip="اختبار الأمر"/>
+                            <Button Content="🗑️ حذف تفصيل" 
+                                    Command="{Binding DeleteDetailCommand}"
+                                    Style="{StaticResource ToolbarBtn}"
+                                    Background="#EF4444"
+                                    Foreground="White"
+                                    Padding="12,6"
+                                    Margin="6,0,0,0"
+                                    BorderThickness="0"
+                                    ToolTip="حذف التفصيل المحدد"
+                                    IsEnabled="{Binding CanDeleteDetail}"/>
+                            <Button Content="💾 حفظ التفاصيل" 
+                                    Command="{Binding UpdateDetailCommand}"
+                                    Style="{StaticResource ToolbarBtn}"
+                                    Background="#3B82F6"
+                                    Foreground="White"
+                                    Padding="12,6"
+                                    Margin="6,0,0,0"
+                                    BorderThickness="0"
+                                    ToolTip="حفظ التغييرات على التفاصيل"
+                                    IsEnabled="{Binding CanUpdateDetail}"/>
+                        </StackPanel>
+
+                        <!-- DataGrid للتفاصيل -->
+                        <DataGrid Grid.Row="2"
+                                  ItemsSource="{Binding Details}"
+                                  SelectedItem="{Binding SelectedDetail}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  GridLinesVisibility="Horizontal"
+                                  HeadersVisibility="Column"
+                                  AlternatingRowBackground="#F8FAFC"
+                                  Background="White"
+                                  BorderBrush="#E5E7EB"
+                                  BorderThickness="1">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="رقم السطر" Binding="{Binding LineNo}" Width="80" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="الصنف" Binding="{Binding ItemName, FallbackValue='غير محدد'}" Width="200" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="المخزن" Binding="{Binding WarehouseName, FallbackValue='غير محدد'}" Width="150" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="الكمية" Binding="{Binding Quantity, StringFormat={}{0:N3}, FallbackValue='0'}" Width="100"/>
+                                <DataGridTextColumn Header="تكلفة الوحدة" Binding="{Binding UnitCost, StringFormat={}{0:N2}, FallbackValue='0'}" Width="120"/>
+                                <DataGridTextColumn Header="التكلفة الإجمالية" Binding="{Binding TotalCost, StringFormat={}{0:N2}, FallbackValue='0'}" Width="120" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="الوحدة" Binding="{Binding UnitName, FallbackValue='غير محدد'}" Width="100" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="مركز الكلفة" Binding="{Binding CostCenterName, FallbackValue='غير محدد'}" Width="150" IsReadOnly="True"/>
+                                
+                                <!-- عمود التحذيرات -->
+                                <DataGridTemplateColumn Header="التحذيرات" Width="200">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="⚠️" 
+                                                           Visibility="{Binding HasWarnings, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                           Margin="2,0"/>
+                                                <TextBlock Text="🔴" 
+                                                           Visibility="{Binding HasErrors, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                           Margin="2,0"/>
+                                                <TextBlock Text="✅" 
+                                                           Visibility="{Binding IsValid, Converter={StaticResource BoolToVisibilityConverter}}"
+                                                           Margin="2,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Loading Indicator -->
+        <Grid Grid.Row="0" Grid.RowSpan="2" 
+              Background="#33000000" 
+              Panel.ZIndex="99"
+              Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}">
+            <Border HorizontalAlignment="Center" 
+                    VerticalAlignment="Center" 
+                    Background="White" 
+                    Padding="22" 
+                    CornerRadius="12">
+                <StackPanel Width="280">
+                    <TextBlock Text="جاري التحميل" 
+                               FontSize="18" 
+                               FontWeight="SemiBold" 
+                               Foreground="#111827" 
+                               TextAlignment="Center" 
+                               Margin="0,0,0,8"/>
+                    <TextBlock Text="لحظة من فضلك..." 
+                               FontSize="12" 
+                               Foreground="#6B7280" 
+                               TextAlignment="Center" 
+                               Margin="0,0,0,14"/>
+                    <ProgressBar IsIndeterminate="True" Height="8" Margin="4,0,4,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</ui:FluentWindow>

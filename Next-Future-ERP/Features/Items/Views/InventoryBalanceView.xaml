@@ -1,0 +1,118 @@
+<UserControl x:Class="Next_Future_ERP.Features.Items.Views.InventoryBalanceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FlowDirection="RightToLeft">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- شريط الأدوات -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="جديد" Command="{Binding NewCommand}" Margin="0,0,5,0" Padding="10,5"/>
+            <Button Content="حفظ" Command="{Binding SaveCommand}" Margin="0,0,5,0" Padding="10,5"/>
+            <Button Content="تحديث" Command="{Binding LoadCommand}" Padding="10,5"/>
+        </StackPanel>
+
+        <!-- نموذج التحرير -->
+        <Border Grid.Row="1" Background="#F8F9FA" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="15" Margin="0,0,0,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="6">
+                    <TextBlock Text="المخزن" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <ComboBox ItemsSource="{Binding Warehouses}"
+                              SelectedValue="{Binding Edit.WarehouseID, Mode=TwoWay}"
+                              SelectedValuePath="WarehouseID"
+                              DisplayMemberPath="WarehouseName"
+                              Width="180"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="6">
+                    <TextBlock Text="الكمية" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Edit.Quantity, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}" Width="180"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Margin="6">
+                    <TextBlock Text="الوحدة" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <ComboBox ItemsSource="{Binding Units}"
+                              SelectedValue="{Binding Edit.UnitID, Mode=TwoWay}"
+                              SelectedValuePath="UnitID"
+                              DisplayMemberPath="UnitName"
+                              Width="180"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="3" Margin="6">
+                    <TextBlock Text="الدفعة" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Edit.BatchID, UpdateSourceTrigger=PropertyChanged}" Width="180"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="6">
+                    <TextBlock Text="متوسط التكلفة" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Edit.AvgCost, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}" Width="180"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="6">
+                    <TextBlock Text="آخر تكلفة" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Edit.LastCost, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}" Width="180"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="2" Margin="6">
+                    <TextBlock Text="تكلفة FIFO" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox Text="{Binding Edit.FtCost, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}" Width="180"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="3" Margin="6">
+                    <TextBlock Text="آخر تحديث" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBlock Text="{Binding Edit.LastUpdate, StringFormat=yyyy-MM-dd HH:mm}" Width="180" 
+                               Background="#F0F0F0" Padding="5" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- قائمة الأرصدة -->
+        <DataGrid Grid.Row="2" 
+                  ItemsSource="{Binding Balances}" 
+                  SelectedItem="{Binding Edit, Mode=TwoWay}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  GridLinesVisibility="Horizontal"
+                  HeadersVisibility="Column">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="المخزن" Binding="{Binding WarehouseName}" Width="120"/>
+                <DataGridTextColumn Header="الكمية" Binding="{Binding Quantity, StringFormat=N4}" Width="100"/>
+                <DataGridTextColumn Header="الوحدة" Binding="{Binding UnitName}" Width="100"/>
+                <DataGridTextColumn Header="الدفعة" Binding="{Binding BatchID}" Width="80"/>
+                <DataGridTextColumn Header="متوسط التكلفة" Binding="{Binding AvgCost, StringFormat=N4}" Width="120"/>
+                <DataGridTextColumn Header="آخر تكلفة" Binding="{Binding LastCost, StringFormat=N4}" Width="120"/>
+                <DataGridTextColumn Header="تكلفة FIFO" Binding="{Binding FtCost, StringFormat=N4}" Width="120"/>
+                <DataGridTextColumn Header="آخر تحديث" Binding="{Binding LastUpdate, StringFormat=yyyy-MM-dd HH:mm}" Width="150"/>
+                <DataGridTemplateColumn Header="إجراءات" Width="100">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="حذف" 
+                                    Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"
+                                    Background="#DC2626" 
+                                    Foreground="White" 
+                                    Padding="8,4"
+                                    Margin="2"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

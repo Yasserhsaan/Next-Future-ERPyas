@@ -1,0 +1,56 @@
+<Button x:Class="Next_Future_ERP.Core.Controls.CommandButton"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+         Width="65" Height="50" Margin="3,2"
+         Cursor="Hand"
+         BorderThickness="1"
+         FontFamily="Segoe UI"
+         FontSize="10"
+         FontWeight="SemiBold">
+
+    <Button.Template>
+        <ControlTemplate TargetType="Button">
+            <Border x:Name="border"
+                    CornerRadius="6"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="#DDD"
+                    BorderThickness="{TemplateBinding BorderThickness}">
+                <StackPanel Orientation="Vertical" 
+                           HorizontalAlignment="Center" 
+                           VerticalAlignment="Center" 
+                           Margin="4">
+                    <!-- أيقونة -->
+                    <TextBlock x:Name="iconText"
+                               FontSize="16"
+                               Text="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}" 
+                               HorizontalAlignment="Center"
+                               Foreground="White"
+                               Margin="0,0,0,2"/>
+                    <!-- النص -->
+                    <TextBlock x:Name="buttonText"
+                               FontSize="{TemplateBinding FontSize}"
+                               FontWeight="{TemplateBinding FontWeight}"
+                               Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}}"
+                               HorizontalAlignment="Center"
+                               Foreground="White"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="border" Property="BorderBrush" Value="#999"/>
+                    <Setter Property="Opacity" Value="0.9"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Opacity" Value="0.8"/>
+                    <Setter TargetName="border" Property="BorderBrush" Value="#666"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                    <Setter TargetName="iconText" Property="Foreground" Value="#999"/>
+                    <Setter TargetName="buttonText" Property="Foreground" Value="#999"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+    </Button.Template>
+</Button>

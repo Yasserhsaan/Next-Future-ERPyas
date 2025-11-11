@@ -1,0 +1,483 @@
+<Page x:Class="Next_Future_ERP.Features.Dashboard.Views.PurchaseDashboardView"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+     xmlns:core="clr-namespace:Next_Future_ERP.Core.Controls"
+     xmlns:converters="clr-namespace:Next_Future_ERP.Features.Dashboard.Converters"
+      Title="داش بورد المشتريات"
+      FlowDirection="RightToLeft"
+      Background="#F8FAFC">
+
+    <Page.Resources>
+        <!-- محولات -->
+        <converters:TypeToIconConverter x:Key="TypeToIconConverter"/>
+        <converters:AlertTypeToBackgroundConverter x:Key="AlertTypeToBackgroundConverter"/>
+        <converters:AlertTypeToBorderConverter x:Key="AlertTypeToBorderConverter"/>
+
+        <!-- ألوان SAP ByDesign المحسنة -->
+        <SolidColorBrush x:Key="SapBlue" Color="#0A6ED1"/>
+        <SolidColorBrush x:Key="SapBlueLight" Color="#E3F2FD"/>
+        <SolidColorBrush x:Key="SapBlueDark" Color="#0050B1"/>
+        <SolidColorBrush x:Key="SapPanelBorder" Color="#D1D5DB"/>
+        <SolidColorBrush x:Key="SapSurface" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SapSurfaceAlt" Color="#F8FAFC"/>
+        <SolidColorBrush x:Key="SapSurfaceHover" Color="#F1F5F9"/>
+        <SolidColorBrush x:Key="SapTextPrimary" Color="#1F2937"/>
+        <SolidColorBrush x:Key="SapTextSecondary" Color="#6B7280"/>
+        <SolidColorBrush x:Key="SapTextTertiary" Color="#9CA3AF"/>
+        
+        <!-- ألوان الحالة المحسنة -->
+        <SolidColorBrush x:Key="Clr.Primary" Color="#0A6ED1"/>
+        <SolidColorBrush x:Key="Clr.Success" Color="#107E3E"/>
+        <SolidColorBrush x:Key="Clr.SuccessLight" Color="#E8F5E8"/>
+        <SolidColorBrush x:Key="Clr.Warning" Color="#D97706"/>
+        <SolidColorBrush x:Key="Clr.WarningLight" Color="#FEF3C7"/>
+        <SolidColorBrush x:Key="Clr.Danger" Color="#DC2626"/>
+        <SolidColorBrush x:Key="Clr.DangerLight" Color="#FEE2E2"/>
+        <SolidColorBrush x:Key="Clr.Info" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="Clr.InfoLight" Color="#EFF6FF"/>
+        <SolidColorBrush x:Key="Clr.Muted" Color="#6B7280"/>
+
+        <!-- بطاقة إحصائية محسنة -->
+        <Style x:Key="StatCard" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource SapSurface}"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="24"/>
+            <Setter Property="BorderBrush" Value="{StaticResource SapPanelBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#0A000000" BlurRadius="20" ShadowDepth="4" Opacity="0.08"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource SapSurfaceHover}"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect Color="#0A000000" BlurRadius="24" ShadowDepth="6" Opacity="0.12"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- بطاقة كبيرة -->
+        <Style x:Key="LargeCard" TargetType="Border" BasedOn="{StaticResource StatCard}">
+            <Setter Property="Padding" Value="24"/>
+        </Style>
+
+        <!-- زر الإجراء -->
+        <Style x:Key="ActionButton" TargetType="Button">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Background" Value="{StaticResource Clr.Primary}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="8"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#0854A0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- زر التنبيه -->
+        <Style x:Key="AlertButton" TargetType="Button">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource Clr.Primary}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Primary}"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="12"/>
+        </Style>
+
+        <!-- نص العنوان -->
+        <Style x:Key="CardTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#111827"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- نص القيمة -->
+        <Style x:Key="StatValue" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="28"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="{StaticResource Clr.Primary}"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <!-- نص الوصف -->
+        <Style x:Key="StatDescription" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="{StaticResource Clr.Muted}"/>
+        </Style>
+
+        <!-- تمويه المحتوى أثناء التحميل -->
+        <Style TargetType="DockPanel" x:Key="BlurWhenLoading">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <BlurEffect Radius="6"/>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="16">
+        <!-- المحتوى الرئيسي مع Blur أثناء التحميل -->
+        <DockPanel Style="{StaticResource BlurWhenLoading}">
+            <!-- شريط الأدوات المحسن -->
+            <Border DockPanel.Dock="Top" Background="{StaticResource SapSurface}" CornerRadius="20" Padding="24" Margin="0,0,0,24" BorderBrush="{StaticResource SapPanelBorder}" BorderThickness="1">
+                <Border.Effect>
+                    <DropShadowEffect Color="#0A000000" BlurRadius="16" ShadowDepth="2" Opacity="0.06"/>
+                </Border.Effect>
+                <DockPanel LastChildFill="False">
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <Border Background="{StaticResource SapBlueLight}" CornerRadius="12" Padding="12" Margin="0,0,16,0">
+                            <TextBlock Text="📊" FontSize="20"/>
+                        </Border>
+                        <StackPanel>
+                            <TextBlock Text="داش بورد المشتريات" FontSize="24" FontWeight="Bold" Foreground="{StaticResource SapTextPrimary}"/>
+                            <TextBlock Text="نظرة شاملة على عمليات المشتريات والمخزون" FontSize="14" Foreground="{StaticResource SapTextSecondary}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                    
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                        <Button Content="🔄 تحديث" Command="{Binding RefreshDashboardCommand}" Style="{StaticResource ActionButton}" Margin="0,0,12,0"/>
+                        <Button Content="📊 أوامر الشراء" Command="{Binding NavigateToPurchaseOrdersCommand}" Style="{StaticResource ActionButton}" Margin="0,0,12,0"/>
+                        <Button Content="📦 سندات الاستلام" Command="{Binding NavigateToStoreReceiptsCommand}" Style="{StaticResource ActionButton}" Margin="0,0,12,0"/>
+                        <Button Content="🧾 فواتير المشتريات" Command="{Binding NavigateToPurchaseInvoicesCommand}" Style="{StaticResource ActionButton}" Margin="0,0,12,0"/>
+                        <Button Content="👥 الموردين" Command="{Binding NavigateToSuppliersCommand}" Style="{StaticResource ActionButton}"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- المحتوى الرئيسي -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- الإحصائيات الرئيسية -->
+                    <Grid Grid.Row="0" Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- أوامر الشراء -->
+                        <Border Grid.Column="0" Style="{StaticResource StatCard}" Margin="0,0,8,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <Border Background="{StaticResource Clr.Primary}" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                        <TextBlock Text="📋" FontSize="16" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="أوامر الشراء" Style="{StaticResource CardTitle}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding DashboardData.TotalPurchaseOrders}" Style="{StaticResource StatValue}" Margin="0,0,0,8"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding DashboardData.PendingPurchaseOrders, StringFormat={}معلق: {0}}" Style="{StaticResource StatDescription}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding DashboardData.TotalPurchaseAmount, StringFormat={}المجموع: {0:N0} ر.س}" Style="{StaticResource StatDescription}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- سندات الاستلام -->
+                        <Border Grid.Column="1" Style="{StaticResource StatCard}" Margin="4,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <Border Background="{StaticResource Clr.Success}" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                        <TextBlock Text="📦" FontSize="16" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="سندات الاستلام" Style="{StaticResource CardTitle}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding DashboardData.TotalReceipts}" Style="{StaticResource StatValue}" Margin="0,0,0,8"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding DashboardData.PendingReceipts, StringFormat={}معلق: {0}}" Style="{StaticResource StatDescription}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding DashboardData.TotalReceiptAmount, StringFormat={}المجموع: {0:N0} ر.س}" Style="{StaticResource StatDescription}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- فواتير المشتريات -->
+                        <Border Grid.Column="2" Style="{StaticResource StatCard}" Margin="4,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <Border Background="{StaticResource Clr.Info}" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                        <TextBlock Text="🧾" FontSize="16" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="فواتير المشتريات" Style="{StaticResource CardTitle}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding DashboardData.TotalInvoices}" Style="{StaticResource StatValue}" Margin="0,0,0,8"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding DashboardData.DraftInvoices, StringFormat={}مسودة: {0}}" Style="{StaticResource StatDescription}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding DashboardData.TotalInvoiceAmount, StringFormat={}المجموع: {0:N0} ر.س}" Style="{StaticResource StatDescription}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- الموردين -->
+                        <Border Grid.Column="3" Style="{StaticResource StatCard}" Margin="8,0,0,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <Border Background="{StaticResource Clr.Warning}" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                        <TextBlock Text="👥" FontSize="16" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="الموردين" Style="{StaticResource CardTitle}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding DashboardData.TotalSuppliers}" Style="{StaticResource StatValue}" Margin="0,0,0,8"/>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding DashboardData.ActiveSuppliers, StringFormat={}نشط: {0}}" Style="{StaticResource StatDescription}" Margin="0,0,0,4"/>
+                                    <TextBlock Text="{Binding DashboardData.BlacklistedSuppliers, StringFormat={}محظور: {0}}" Style="{StaticResource StatDescription}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- الإحصائيات الثانوية والتنبيهات -->
+                    <Grid Grid.Row="1" Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- العناصر الحديثة -->
+                        <Border Grid.Column="0" Style="{StaticResource LargeCard}" Margin="0,0,8,0">
+                            <StackPanel>
+                                <TextBlock Text="العناصر الحديثة" Style="{StaticResource CardTitle}"/>
+                                <ScrollViewer Height="300" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding RecentItems}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{StaticResource SapSurfaceAlt}" 
+                                                        CornerRadius="8" 
+                                                        Padding="12" 
+                                                        Margin="0,0,0,8">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+
+                                                        <!-- أيقونة النوع -->
+                                                        <TextBlock Grid.Column="0" 
+                                                                   Text="{Binding Type, Converter={StaticResource TypeToIconConverter}}" 
+                                                                   FontSize="20" 
+                                                                   Margin="0,0,12,0"/>
+
+                                                        <!-- تفاصيل العنصر -->
+                                                        <StackPanel Grid.Column="1">
+                                                            <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="14"/>
+                                                            <TextBlock Text="{Binding Description}" FontSize="12" Foreground="{StaticResource Clr.Muted}"/>
+                                                            <TextBlock Text="{Binding Date, StringFormat={}{0:yyyy-MM-dd HH:mm}}" FontSize="11" Foreground="{StaticResource Clr.Muted}"/>
+                                                        </StackPanel>
+
+                                                        <!-- الحالة والمبلغ -->
+                                                        <StackPanel Grid.Column="2" HorizontalAlignment="Right">
+                                                            <TextBlock Text="{Binding Status}" 
+                                                                       FontSize="12" 
+                                                                       FontWeight="SemiBold"
+                                                                       Foreground="{Binding StatusColor}"/>
+                                                            <TextBlock Text="{Binding Amount, StringFormat={}{0:N0} ر.س}" 
+                                                                       FontSize="12" 
+                                                                       Foreground="{StaticResource Clr.Muted}"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- التنبيهات -->
+                        <Border Grid.Column="1" Style="{StaticResource LargeCard}" Margin="8,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="التنبيهات" Style="{StaticResource CardTitle}"/>
+                                <ScrollViewer Height="300" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding Alerts}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding Type, Converter={StaticResource AlertTypeToBackgroundConverter}}" 
+                                                        CornerRadius="8" 
+                                                        Padding="12" 
+                                                        Margin="0,0,0,8"
+                                                        BorderBrush="{Binding Type, Converter={StaticResource AlertTypeToBorderConverter}}"
+                                                        BorderThickness="1">
+                                                    <StackPanel>
+                                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" FontSize="14"/>
+                                                        <TextBlock Text="{Binding Message}" FontSize="12" Foreground="{StaticResource Clr.Muted}" TextWrapping="Wrap"/>
+                                                        <Button Content="{Binding ActionText}" 
+                                                                Command="{Binding DataContext.HandleAlertActionCommand, RelativeSource={RelativeSource AncestorType=Page}}"
+                                                                CommandParameter="{Binding}"
+                                                                Style="{StaticResource AlertButton}"
+                                                                HorizontalAlignment="Left"
+                                                                Margin="0,8,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- مؤشرات الأداء -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- معدل الإكمال -->
+                        <Border Grid.Column="0" Style="{StaticResource StatCard}" Margin="0,0,8,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <Border Background="{StaticResource Clr.SuccessLight}" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                        <TextBlock Text="✓" FontSize="16" Foreground="{StaticResource Clr.Success}" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="معدل إكمال أوامر الشراء" Style="{StaticResource CardTitle}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding DashboardData.CompletionRate, StringFormat={}{0:F1}%}" Style="{StaticResource StatValue}" Margin="0,0,0,12"/>
+                                <ProgressBar Value="{Binding DashboardData.CompletionRate, Mode=OneWay}" 
+                                             Maximum="100" 
+                                             Height="12" 
+                                             Margin="0,0,0,8"
+                                             Background="{StaticResource SapPanelBorder}"
+                                             Foreground="{StaticResource Clr.Success}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- معدل الاعتماد -->
+                        <Border Grid.Column="1" Style="{StaticResource StatCard}" Margin="4,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <Border Background="{StaticResource Clr.InfoLight}" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                        <TextBlock Text="📋" FontSize="16" Foreground="{StaticResource Clr.Info}" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="معدل اعتماد سندات الاستلام" Style="{StaticResource CardTitle}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding DashboardData.ApprovalRate, StringFormat={}{0:F1}%}" Style="{StaticResource StatValue}" Margin="0,0,0,12"/>
+                                <ProgressBar Value="{Binding DashboardData.ApprovalRate, Mode=OneWay}" 
+                                             Maximum="100" 
+                                             Height="12" 
+                                             Margin="0,0,0,8"
+                                             Background="{StaticResource SapPanelBorder}"
+                                             Foreground="{StaticResource Clr.Info}"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- معدل الدفع -->
+                        <Border Grid.Column="2" Style="{StaticResource StatCard}" Margin="8,0,0,0">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <Border Background="{StaticResource Clr.WarningLight}" CornerRadius="8" Padding="8" Margin="0,0,12,0">
+                                        <TextBlock Text="💰" FontSize="16" Foreground="{StaticResource Clr.Warning}" FontWeight="Bold"/>
+                                    </Border>
+                                    <TextBlock Text="معدل دفع الفواتير" Style="{StaticResource CardTitle}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="{Binding DashboardData.PaymentRate, StringFormat={}{0:F1}%}" Style="{StaticResource StatValue}" Margin="0,0,0,12"/>
+                                <ProgressBar Value="{Binding DashboardData.PaymentRate, Mode=OneWay}" 
+                                             Maximum="100" 
+                                             Height="12" 
+                                             Margin="0,0,0,8"
+                                             Background="{StaticResource SapPanelBorder}"
+                                             Foreground="{StaticResource Clr.Warning}"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- مؤشر التحميل بأسلوب SAP ByDesign -->
+        <Grid Background="#1A000000" Panel.ZIndex="99">
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                            <Setter Property="Visibility" Value="Visible"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Border HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Background="White"
+                    CornerRadius="8"
+                    Padding="18"
+                    BorderBrush="{StaticResource SapPanelBorder}"
+                    BorderThickness="1">
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                    <Grid Width="42" Height="42" RenderTransformOrigin="0.5,0.5" Margin="0,0,0,10">
+                        <Grid.RenderTransform>
+                            <RotateTransform Angle="0"/>
+                        </Grid.RenderTransform>
+
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource SapBlue}" Opacity="1"   HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource SapBlue}" Opacity="0.9" HorizontalAlignment="Right" VerticalAlignment="Top"    Margin="0,6,6,0"/>
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource SapBlue}" Opacity="0.8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource SapBlue}" Opacity="0.7" HorizontalAlignment="Right" VerticalAlignment="Bottom"  Margin="0,0,6,6"/>
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource SapBlue}" Opacity="0.6" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource SapBlue}" Opacity="0.5" HorizontalAlignment="Left"  VerticalAlignment="Bottom"  Margin="6,0,0,6"/>
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource SapBlue}" Opacity="0.45" HorizontalAlignment="Left"  VerticalAlignment="Center"/>
+                        <Ellipse Width="6" Height="6" Fill="{StaticResource SapBlue}" Opacity="0.4" HorizontalAlignment="Left"  VerticalAlignment="Top"     Margin="6,6,0,0"/>
+
+                        <Grid.Triggers>
+                            <EventTrigger RoutedEvent="Grid.Loaded">
+                                <BeginStoryboard>
+                                    <Storyboard RepeatBehavior="Forever">
+                                        <DoubleAnimation
+                                            Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)"
+                                            From="0" To="360" Duration="0:0:1.2" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </Grid.Triggers>
+                    </Grid>
+
+                    <TextBlock Text="جاري تحميل البيانات..."
+                               FontSize="12"
+                               Foreground="#2B2F33"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,2"/>
+                    <TextBlock Text="يرجى الانتظار"
+                               FontSize="11"
+                               Foreground="#6B7280"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Page>

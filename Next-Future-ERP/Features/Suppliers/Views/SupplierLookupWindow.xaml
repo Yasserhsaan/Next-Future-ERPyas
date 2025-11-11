@@ -1,0 +1,210 @@
+<Window x:Class="Next_Future_ERP.Features.Suppliers.Views.SupplierLookupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="البحث عن الموردين"
+        Height="600" Width="900"
+        MinWidth="800" MinHeight="500"
+        WindowStartupLocation="CenterOwner"
+        FlowDirection="RightToLeft"
+        Background="#F6F7F9"
+        ResizeMode="CanResizeWithGrip"
+        Language="ar-SA"
+        FontFamily="Segoe UI, Cairo, Noto Naskh Arabic"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType">
+
+    <Window.Resources>
+        <!-- ألوان -->
+        <SolidColorBrush x:Key="Clr.Surface" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="Clr.SurfaceAlt" Color="#FAFBFD"/>
+        <SolidColorBrush x:Key="Clr.Border" Color="#E6EAF0"/>
+        <SolidColorBrush x:Key="Clr.BorderStrong" Color="#D5DAE2"/>
+        <SolidColorBrush x:Key="Clr.Muted" Color="#6B7280"/>
+        <SolidColorBrush x:Key="Clr.Primary" Color="#0A6ED1"/>
+        <SolidColorBrush x:Key="Clr.PrimaryDark" Color="#0854A0"/>
+        <SolidColorBrush x:Key="Clr.TableHeader" Color="#F2F5F9"/>
+
+        <!-- أنماط البطاقات -->
+        <Style x:Key="Card" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource Clr.Surface}"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect Color="#1F000000" BlurRadius="10" ShadowDepth="1" Opacity="0.25"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- أنماط النصوص -->
+        <Style x:Key="SectionTitle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#111827"/>
+        </Style>
+        <Style x:Key="Caption" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource Clr.Muted}"/>
+        </Style>
+
+        <!-- أنماط المدخلات -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Margin" Value="0,4,0,0"/>
+        </Style>
+
+        <!-- أنماط الأزرار -->
+        <Style x:Key="Btn.Primary" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Clr.Primary}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="MinWidth" Value="120"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.PrimaryDark}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
+        <Style x:Key="Btn.Secondary" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource Clr.SurfaceAlt}"/>
+            <Setter Property="Foreground" Value="#111827"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="MinWidth" Value="110"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.BorderStrong}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <!-- أنماط DataGrid -->
+        <Style TargetType="DataGrid">
+            <Setter Property="GridLinesVisibility" Value="None"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="RowHeight" Value="36"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="AlternationCount" Value="2"/>
+            <Setter Property="AlternatingRowBackground" Value="#FBFCFE"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="SelectionUnit" Value="FullRow"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+        </Style>
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="{StaticResource Clr.TableHeader}"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
+        <Style TargetType="DataGridCell">
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="Padding" Value="8,4"/>
+        </Style>
+
+        <!-- ألوان التمييز -->
+        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#D6E6FB"/>
+        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#D6E6FB"/>
+    </Window.Resources>
+
+    <DockPanel LastChildFill="True">
+        <!-- شريط علوي -->
+        <Border Background="White" DockPanel.Dock="Top" BorderBrush="{StaticResource Clr.Border}" BorderThickness="0,0,0,1" Padding="12,10">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="84*"/>
+                    <ColumnDefinition Width="185*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- عنوان -->
+                <TextBlock Text="البحث عن الموردين" FontSize="18" FontWeight="SemiBold" VerticalAlignment="Center" Grid.ColumnSpan="2"/>
+
+                <!-- أزرار الإجراءات -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Content="تأكيد" Click="Choose_Click" Style="{StaticResource Btn.Primary}" Margin="0,0,8,0"/>
+                    <Button Content="إلغاء" Click="Cancel_Click" Style="{StaticResource Btn.Secondary}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- المحتوى -->
+        <ScrollViewer Padding="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="14"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- بطاقة البحث -->
+                <Border Grid.Row="0" Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- عنوان القسم -->
+                        <TextBlock Text="معايير البحث" Style="{StaticResource SectionTitle}" Margin="0,0,0,8"/>
+
+                        <!-- حقل البحث -->
+                        <StackPanel Grid.Row="1">
+                            <TextBlock Text="اسم المورد أو الكود" Style="{StaticResource Caption}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Column="0" Text="{Binding Search, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <Button Grid.Column="1" Content="بحث" Command="{Binding LoadCommand}" Style="{StaticResource Btn.Secondary}" Margin="8,0,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- بطاقة النتائج -->
+                <Border Grid.Row="2" Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="10"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- عنوان النتائج -->
+                        <TextBlock Text="نتائج البحث" Style="{StaticResource SectionTitle}" Margin="0,0,0,4"/>
+
+                        <!-- جدول الموردين -->
+                        <DataGrid Grid.Row="2"
+                                  ItemsSource="{Binding Items}"
+                                  SelectedItem="{Binding Selected, Mode=TwoWay}"
+                                  AlternatingRowBackground="#F8FAFF"
+                                  MouseDoubleClick="DataGrid_MouseDoubleClick">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="الكود" Binding="{Binding SupplierCode}" Width="160"/>
+                                <DataGridTextColumn Header="الاسم" Binding="{Binding SupplierName}" Width="*"/>
+                                <DataGridTextColumn Header="الرقم الضريبي" Binding="{Binding TaxNumber}" Width="200"/>
+                                <DataGridTextColumn Header="الهاتف" Binding="{Binding Phone}" Width="150"/>
+                                <DataGridCheckBoxColumn Header="نشط" Binding="{Binding IsActive}" Width="80"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
+
+

@@ -1,0 +1,210 @@
+<UserControl x:Class="Next_Future_ERP.Features.Items.Views.ItemComponentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:Next_Future_ERP.Converters"
+             FlowDirection="RightToLeft">
+    
+    <UserControl.Resources>
+        <converters:SafeDecimalConverter x:Key="SafeDec4" Format="F4"/>
+        
+        <Style TargetType="TextBlock" x:Key="StrongLabel">
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="FieldBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="FontSize" Value="13.5"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="bd" CornerRadius="8"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="4,0,4,0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="bd" Property="BorderBrush" Value="#2563EB"/>
+                                <Setter TargetName="bd" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="ComboBox" x:Key="FieldCombo" BasedOn="{StaticResource {x:Type ComboBox}}">
+            <Setter Property="Padding" Value="8,4"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+        </Style>
+
+        <Style TargetType="Button" x:Key="PrimaryBtn">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderBrush" Value="#1E40AF"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="8,0,0,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" CornerRadius="10"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,2"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#1E40AF"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.5"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style TargetType="Button" x:Key="GhostBtn" BasedOn="{StaticResource PrimaryBtn}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+        </Style>
+
+        <Style TargetType="Button" x:Key="DeleteBtn">
+            <Setter Property="Background" Value="#EF4444"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderBrush" Value="#DC2626"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" CornerRadius="6"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="6,4"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#DC2626"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="bd" Property="Opacity" Value="0.5"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- نموذج الإدخال -->
+        <Border Grid.Row="0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="16" Margin="0,0,0,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- المكون -->
+                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                    <TextBlock Text="المكون" Style="{StaticResource StrongLabel}"/>
+                    <ComboBox ItemsSource="{Binding ItemOptions}"
+                              SelectedValue="{Binding Edit.ComponentItemID, Mode=TwoWay}"
+                              SelectedValuePath="Key"
+                              DisplayMemberPath="Value"
+                              Style="{StaticResource FieldCombo}"/>
+                </StackPanel>
+
+                <!-- الوحدة -->
+                <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                    <TextBlock Text="الوحدة" Style="{StaticResource StrongLabel}"/>
+                    <ComboBox ItemsSource="{Binding UnitOptions}"
+                              SelectedValue="{Binding Edit.UnitID, Mode=TwoWay}"
+                              SelectedValuePath="Key"
+                              DisplayMemberPath="Value"
+                              Style="{StaticResource FieldCombo}"/>
+                </StackPanel>
+
+                <!-- الكمية -->
+                <StackPanel Grid.Column="2" Margin="0,0,12,0">
+                    <TextBlock Text="الكمية" Style="{StaticResource StrongLabel}"/>
+                    <TextBox Style="{StaticResource FieldBox}" TextAlignment="Right">
+                        <TextBox.Text>
+                            <Binding Path="Edit.Quantity" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" Converter="{StaticResource SafeDec4}"/>
+                        </TextBox.Text>
+                    </TextBox>
+                </StackPanel>
+
+                <!-- الأزرار -->
+                <StackPanel Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <Button Content="جديد" Width="80" Style="{StaticResource GhostBtn}" Command="{Binding NewCommand}"/>
+                    <Button Content="حفظ" Width="80" Style="{StaticResource PrimaryBtn}" Command="{Binding SaveCommand}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- جدول البيانات -->
+        <DataGrid Grid.Row="1" ItemsSource="{Binding Components}" AutoGenerateColumns="False" CanUserAddRows="False" SelectedItem="{Binding Edit}"
+                  RowBackground="White" AlternatingRowBackground="#F8F8F8" GridLinesVisibility="Horizontal" HeadersVisibility="Column">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    <Setter Property="FontWeight" Value="SemiBold"/>
+                    <Setter Property="Background" Value="#F3F4F6"/>
+                    <Setter Property="Foreground" Value="#111827"/>
+                    <Setter Property="Padding" Value="8,6"/>
+                </Style>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="Padding" Value="6,0"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </Style>
+                <Style TargetType="TextBlock" x:Key="RightAlignedCell">
+                    <Setter Property="TextAlignment" Value="Right"/>
+                </Style>
+                <Style TargetType="TextBlock" x:Key="CenterAlignedCell">
+                    <Setter Property="TextAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="#" Binding="{Binding ItemComponentID}" Width="60" IsReadOnly="True" ElementStyle="{StaticResource CenterAlignedCell}"/>
+                <DataGridTextColumn Header="المكون" Binding="{Binding ComponentItemName}" Width="*" ElementStyle="{StaticResource CenterAlignedCell}"/>
+                <DataGridTextColumn Header="الوحدة" Binding="{Binding UnitName}" Width="120" ElementStyle="{StaticResource CenterAlignedCell}"/>
+                <DataGridTextColumn Header="الكمية" Binding="{Binding Quantity, StringFormat=F4}" Width="100" ElementStyle="{StaticResource RightAlignedCell}"/>
+                <DataGridTemplateColumn Header="حذف" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="حذف" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}"
+                                    Style="{StaticResource DeleteBtn}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>

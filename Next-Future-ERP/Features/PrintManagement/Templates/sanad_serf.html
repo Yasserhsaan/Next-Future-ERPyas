@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="ar">
+<head><meta charset="utf-8"><title>سند صرف</title>
+<style>body {font-family: Arial; direction: rtl; margin: 18px;} </style>
+</head><body>
+  <h2 style="text-align:center;">سند صرف</h2>
+  <div>رقم السند: {{payment.number}} &nbsp; | &nbsp; التاريخ: {{payment.date}}</div>
+  <div>المدفوع إلى: <strong>{{payee.name}}</strong></div>
+  <div>المبلغ: <strong>{{payment.amount}}</strong> ({{currency}})</div>
+  <div>البيان: {{payment.description}}</div>
+  <div style="margin-top:30px;">توقيع: ________________</div>
+</body></html>

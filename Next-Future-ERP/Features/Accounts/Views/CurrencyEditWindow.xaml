@@ -1,0 +1,181 @@
+<Window x:Class="Next_Future_ERP.Features.Accounts.Views.CurrencyEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{Binding WindowTitle}" Height="600" Width="900"
+        WindowStartupLocation="CenterOwner"
+        FlowDirection="RightToLeft"
+        Background="#F7F9FC"
+        ResizeMode="CanResizeWithGrip"
+        MinWidth="800" MinHeight="500"
+        Loaded="Window_Loaded">
+
+    <!-- اختصارات -->
+    <Window.InputBindings>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveCommand}"/>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
+    </Window.InputBindings>
+
+    <Window.Resources>
+        <!-- ألوان -->
+        <SolidColorBrush x:Key="CardBg" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="CardBorder" Color="#E6EAF0"/>
+        <SolidColorBrush x:Key="Soft" Color="#F3F4F6"/>
+        <SolidColorBrush x:Key="Accent" Color="#3B82F6"/>
+        <SolidColorBrush x:Key="AccentDark" Color="#2563EB"/>
+        <SolidColorBrush x:Key="Muted" Color="#64748B"/>
+
+        <!-- حاوية -->
+        <Style x:Key="CardBorderStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="Padding" Value="14"/>
+        </Style>
+
+        <!-- مدخلات -->
+        <Style TargetType="TextBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="6,4"/>
+        </Style>
+        <Style TargetType="Button" x:Key="PrimaryBtn">
+            <Setter Property="Background" Value="{StaticResource Accent}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="BorderBrush" Value="{StaticResource AccentDark}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- أزرار أعلى -->
+            <RowDefinition Height="*"/>    <!-- المحتوى -->
+            <RowDefinition Height="Auto"/> <!-- تلميح سفلي -->
+        </Grid.RowDefinitions>
+
+        <!-- شريط أعلى -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="حفظ" Width="130" Style="{StaticResource PrimaryBtn}"
+                    Command="{Binding SaveCommand}" Margin="0,0,10,0"/>
+            <Button Content="إلغاء" Width="110" Command="{Binding CancelCommand}"/>
+        </StackPanel>
+
+        <!-- المحتوى -->
+        <Border Grid.Row="1" Style="{StaticResource CardBorderStyle}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid Margin="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- العمود الأول -->
+                    <StackPanel Grid.Column="0" Margin="8">
+                        <!-- الاسم العربي -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="الاسم العربي" Foreground="{StaticResource Muted}" FontSize="12"/>
+                            <TextBox Text="{Binding Model.CurrencyNameAr, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <!-- الرمز -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="رمز العملة" Foreground="{StaticResource Muted}" FontSize="12"/>
+                            <TextBox Text="{Binding Model.CurrencySymbol, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <!-- عدد المنازل العشرية -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="عدد المنازل العشرية" Foreground="{StaticResource Muted}" FontSize="12"/>
+                            <TextBox Text="{Binding Model.DecimalPlaces, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <!-- الوحدة الجزئية -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="الوحدة الجزئية" Foreground="{StaticResource Muted}" FontSize="12"/>
+                            <TextBox Text="{Binding Model.FractionUnit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <!-- عملة أجنبية -->
+                        <CheckBox IsChecked="{Binding Model.IsForeignCurrency, Mode=TwoWay}" 
+                                  Content="عملة أجنبية" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- العمود الثاني -->
+                    <StackPanel Grid.Column="1" Margin="8">
+                        <!-- الاسم الإنجليزي -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="الاسم الإنجليزي" Foreground="{StaticResource Muted}" FontSize="12"/>
+                            <TextBox Text="{Binding Model.CurrencyNameEn, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <!-- سعر الصرف -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="سعر الصرف" Foreground="{StaticResource Muted}" FontSize="12"/>
+                            <TextBox Text="{Binding Model.ExchangeRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <!-- أقل سعر تحويل -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="أقل سعر تحويل" Foreground="{StaticResource Muted}" FontSize="12"/>
+                            <TextBox Text="{Binding Model.MinExchangeRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <!-- أعلى سعر تحويل -->
+                        <StackPanel Margin="0,0,0,12">
+                            <TextBlock Text="أعلى سعر تحويل" Foreground="{StaticResource Muted}" FontSize="12"/>
+                            <TextBox Text="{Binding Model.MaxExchangeRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+
+                        <!-- عملة الشركة -->
+                        <CheckBox IsChecked="{Binding Model.IsCompanyCurrency, Mode=TwoWay}" 
+                                  Content="عملة الشركة" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- معلومات إضافية -->
+                    <Border Grid.ColumnSpan="2" Grid.Row="1" Margin="8,16,8,0" Padding="12"
+                            Background="#F9FAFB" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="10">
+                        <StackPanel>
+                            <TextBlock Text="معلومات إضافية" FontWeight="SemiBold" Foreground="#111827" Margin="0,0,0,8"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" Text="معرف العملة:" Foreground="#6B7280" Margin="0,0,10,0"/>
+                                <TextBlock Grid.Column="1" Text="{Binding Model.CurrencyId}" 
+                                           FontWeight="SemiBold" Foreground="#111827"/>
+                                
+                                <TextBlock Grid.Column="2" Text="معرف الشركة:" Foreground="#6B7280" Margin="20,0,10,0"/>
+                                <TextBlock Grid.Column="3" Text="{Binding Model.CompanyId}" 
+                                           FontWeight="SemiBold" Foreground="#111827"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+
+        <!-- شريط سفلي -->
+        <TextBlock Grid.Row="2"
+                   Text="💡 نصيحة: تأكد من ملء جميع الحقول المطلوبة قبل الحفظ."
+                   Foreground="{StaticResource Muted}" Margin="4,10,0,0"/>
+    </Grid>
+</Window>

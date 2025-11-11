@@ -1,0 +1,476 @@
+<UserControl x:Class="Next_Future_ERP.Features.Inventory.Views.InventoryOpeningView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:converters="clr-namespace:Next_Future_ERP.Features.Inventory.Converters"
+             xmlns:models="clr-namespace:Next_Future_ERP.Features.Inventory.Models"
+             mc:Ignorable="d" 
+             d:DesignHeight="800" d:DesignWidth="1200"
+             FlowDirection="RightToLeft">
+    
+    <UserControl.Resources>
+        <converters:InventoryStatusToTextConverter x:Key="StatusToTextConverter"/>
+        <converters:InventoryStatusToColorConverter x:Key="StatusToColorConverter"/>
+        <converters:EntryMethodToTextConverter x:Key="EntryMethodConverter"/>
+        <converters:ViewModeToTextConverter x:Key="ViewModeConverter"/>
+        <converters:CostMethodToTextConverter x:Key="CostMethodConverter"/>
+        <converters:WeightedAvgScopeToTextConverter x:Key="WeightedAvgScopeConverter"/>
+        <converters:CurrencyConverter x:Key="CurrencyConverter"/>
+        <converters:QuantityConverter x:Key="QuantityConverter"/>
+        <converters:BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:InverseBooleanToVisibilityConverter x:Key="InverseBoolToVisibilityConverter"/>
+        <converters:DateToShortStringConverter x:Key="DateConverter"/>
+        <converters:HeaderSettingToVisibilityConverter x:Key="HeaderSettingToVisibilityConverter"/>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- شريط الأدوات + تلميح سريع -->
+        <Border Grid.Row="0" Background="White" 
+                BorderBrush="LightGray" 
+                BorderThickness="0,0,0,1" Padding="10">
+            <StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <ui:Button Icon="{ui:SymbolIcon Add24}" 
+                          Content="جديد" 
+                          Command="{Binding NewDocumentCommand}"
+                          Margin="0,0,10,0"/>
+                
+                <ui:Button Icon="{ui:SymbolIcon Save24}" 
+                          Content="حفظ" 
+                          Command="{Binding SaveHeaderCommand}"
+                          IsEnabled="{Binding CanEdit}"
+                          Margin="0,0,10,0"/>
+                
+                <ui:Button Icon="{ui:SymbolIcon Checkmark24}" 
+                          Content="اعتماد" 
+                          Command="{Binding ApproveDocumentCommand}"
+                          IsEnabled="{Binding CanApprove}"
+                          Appearance="Primary"
+                          Margin="0,0,10,0"/>
+                
+                <Separator Margin="10,0"/>
+                
+                <ui:Button Icon="{ui:SymbolIcon DocumentArrowDown24}" 
+                          Content="توليد تلقائي" 
+                          Command="{Binding GenerateAutoDetailsCommand}"
+                          IsEnabled="{Binding CanEdit}"
+                          Margin="0,0,10,0"/>
+                
+                <ui:Button Icon="{ui:SymbolIcon ArrowUpload24}" 
+                          Content="استيراد Excel" 
+                          IsEnabled="{Binding CanEdit}"
+                          Margin="0,0,10,0"/>
+                
+                <ui:Button Icon="{ui:SymbolIcon ArrowDownload24}" 
+                          Content="تصدير Excel" 
+                          Margin="0,0,10,0"/>
+                
+                <Separator Margin="10,0"/>
+                
+                <ui:Button Icon="{ui:SymbolIcon ArrowSync24}" 
+                          Content="تحديث البيانات" 
+                          Command="{Binding RefreshDataCommand}"
+                          Margin="0,0,10,0"/>
+
+                <!-- استعراض المستندات غير المعتمدة -->
+                <Separator Margin="10,0"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="رقم المستند:" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                    <ui:TextBox x:Name="DocIdToLoad" Width="100" />
+                    <ui:Button Content="استعراض" Margin="6,0,0,0"
+                              Click="BrowseDrafts_Click"/>
+                </StackPanel>
+            </StackPanel>
+            <TextBlock Margin="0,6,0,0" Foreground="#6B7280">
+                <Run Text="الخطوات: "/>
+                <Run Text="1) أكمل بيانات الرأس"/>
+                <Run Text="، 2) أضف أسطر الأصناف"/>
+                <Run Text="، 3) حفظ ثم اعتماد"/>
+            </TextBlock>
+            </StackPanel>
+        </Border>
+
+        <!-- معلومات الترويسة -->
+        <Expander Grid.Row="1" Header="معلومات مستند الرصيد الافتتاحي" IsExpanded="True" Margin="10">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- الصف الأول -->
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="رقم المستند" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <ui:TextBox Text="{Binding CurrentHeader.DocNo}" 
+                               IsEnabled="{Binding CanEdit}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,10,10">
+                    <TextBlock Text="تاريخ المستند" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <DatePicker SelectedDate="{Binding CurrentHeader.DocDate}" 
+                               IsEnabled="{Binding CanEdit}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,10,10">
+                    <TextBlock Text="الحالة" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <ui:Badge Content="{Binding CurrentHeader.Status, Converter={StaticResource StatusToTextConverter}}"
+                             Background="{Binding CurrentHeader.Status, Converter={StaticResource StatusToColorConverter}}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="3" Margin="0,0,0,10">
+                    <TextBlock Text="تاريخ الاعتماد" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <TextBlock Text="{Binding CurrentHeader.ApprovedAt, Converter={StaticResource DateConverter}}"
+                              Foreground="Gray"/>
+                </StackPanel>
+
+                <!-- الصف الثاني -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,10">
+                    <TextBlock Text="طريقة الإدخال" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <ComboBox SelectedValue="{Binding CurrentHeader.EntryMethod}" 
+                             SelectedValuePath="Tag"
+                             IsEnabled="{Binding CanEdit}">
+                        <ComboBoxItem Content="يدوي" Tag="{x:Static models:EntryMethod.Manual}"/>
+                        <ComboBoxItem Content="تلقائي" Tag="{x:Static models:EntryMethod.Auto}"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,10,10">
+                    <TextBlock Text="طريقة العرض" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <ComboBox SelectedValue="{Binding CurrentHeader.ViewMode}" 
+                             SelectedValuePath="Tag"
+                             IsEnabled="{Binding CanEdit}">
+                        <ComboBoxItem Content="حسب الصنف" Tag="{x:Static models:ViewMode.ByItem}"/>
+                        <ComboBoxItem Content="حسب المخزن" Tag="{x:Static models:ViewMode.ByWarehouse}"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,10,10">
+                    <TextBlock Text="طريقة التكاليف" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <ComboBox SelectedValue="{Binding CurrentHeader.CostMethod}" 
+                             SelectedValuePath="Tag"
+                             IsEnabled="{Binding CanEdit}">
+                        <ComboBoxItem Content="المتوسط المرجح" Tag="{x:Static models:CostMethod.WeightedAverage}"/>
+                        <ComboBoxItem Content="الوارد أولاً الصادر أولاً" Tag="{x:Static models:CostMethod.FIFO}"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="3" Margin="0,0,0,10">
+                    <TextBlock Text="نطاق المتوسط المرجح" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <ComboBox SelectedValue="{Binding CurrentHeader.WeightedAvgScope}" 
+                             SelectedValuePath="Tag"
+                             IsEnabled="{Binding CanEdit}">
+                        <ComboBoxItem Content="حسب الصنف" Tag="{x:Static models:WeightedAvgScope.ByItem}"/>
+                        <ComboBoxItem Content="حسب الصنف والمخزن" Tag="{x:Static models:WeightedAvgScope.ByItemWarehouse}"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- الصف الثالث - إعدادات التتبع -->
+                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,10,10">
+                    <ui:ToggleSwitch Content="استخدام تاريخ الانتهاء" 
+                                    IsChecked="{Binding CurrentHeader.UseExpiry}"
+                                    IsEnabled="{Binding CanEdit}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,10,10">
+                    <ui:ToggleSwitch Content="استخدام أرقام الدفعات" 
+                                    IsChecked="{Binding CurrentHeader.UseBatch}"
+                                    IsEnabled="{Binding CanEdit}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,10,10">
+                    <ui:ToggleSwitch Content="استخدام الأرقام التسلسلية" 
+                                    IsChecked="{Binding CurrentHeader.UseSerial}"
+                                    IsEnabled="{Binding CanEdit}"/>
+                </StackPanel>
+
+                <!-- الصف الرابع - الملاحظات -->
+                <StackPanel Grid.Row="3" Grid.ColumnSpan="4" Margin="0,0,0,10">
+                    <TextBlock Text="ملاحظات" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <ui:TextBox Text="{Binding CurrentHeader.Notes}" 
+                               IsEnabled="{Binding CanEdit}"
+                               MinHeight="60"
+                               TextWrapping="Wrap"
+                               AcceptsReturn="True"/>
+                </StackPanel>
+            </Grid>
+        </Expander>
+
+        <!-- منطقة التفاصيل -->
+        <Grid Grid.Row="2" Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- شريط إضافة سطر جديد -->
+            <Expander Grid.Row="0" Header="إضافة/تعديل سطر" IsExpanded="True" 
+                     IsEnabled="{Binding CanEdit}" Margin="0,0,0,10">
+                <Expander.HeaderTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="إضافة/تعديل سطر" VerticalAlignment="Center"/>
+                            <Border Background="Orange" CornerRadius="3" Margin="10,0,0,0"
+                                   Visibility="{Binding DataContext.IsDataLoaded, 
+                                               RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                               Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                                <TextBlock Text="لم يتم تحميل البيانات" 
+                                          Foreground="White" 
+                                          FontSize="10" 
+                                          Margin="5,2"/>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                </Expander.HeaderTemplate>
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- الصف الأول -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,10,10">
+                        <TextBlock Text="الصنف" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding AvailableItems}"
+                                 SelectedItem="{Binding NewLineItem}"
+                                 IsEditable="True"
+                                 IsTextSearchEnabled="True"
+                                 TextSearch.TextPath="ItemName"
+                                 MinWidth="200">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding ItemCode}" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                                        <TextBlock Text="-" Margin="0,0,5,0"/>
+                                        <TextBlock Text="{Binding ItemName}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,10,10">
+                        <TextBlock Text="المخزن" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding AvailableWarehouses}"
+                                 SelectedItem="{Binding NewLineWarehouse}"
+                                 IsEditable="True"
+                                 IsTextSearchEnabled="True"
+                                 TextSearch.TextPath="WarehouseName"
+                                 MinWidth="150">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding WarehouseCode}" FontWeight="SemiBold" Margin="0,0,10,0"/>
+                                        <TextBlock Text="-" Margin="0,0,5,0"/>
+                                        <TextBlock Text="{Binding WarehouseName}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,10,10">
+                        <TextBlock Text="الوحدة" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ComboBox ItemsSource="{Binding AvailableUnits}"
+                                 SelectedItem="{Binding NewLineUnit}"
+                                 DisplayMemberPath="UnitName"
+                                 IsEditable="True"
+                                 IsTextSearchEnabled="True"
+                                 TextSearch.TextPath="UnitName"
+                                 MinWidth="100"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="3" Margin="0,0,10,10">
+                        <TextBlock Text="الكمية" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ui:NumberBox Value="{Binding NewLineQty}" 
+                                     Minimum="0"
+                                     SpinButtonPlacementMode="Inline"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="4" Margin="0,0,10,10">
+                        <TextBlock Text="تكلفة الوحدة" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ui:NumberBox Value="{Binding NewLineUnitCost}" 
+                                     Minimum="0"
+                                     SpinButtonPlacementMode="Inline"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="5" Margin="0,0,0,10" VerticalAlignment="Bottom">
+                        <ui:Button Content="إضافة"
+                                  Command="{Binding AddDetailCommand}"
+                                  Appearance="Primary"
+                                  Icon="{ui:SymbolIcon Add24}"/>
+                    </StackPanel>
+
+                    <!-- الصف الثاني - حقول إضافية -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,10,10"
+                               Visibility="{Binding CurrentHeader.UseExpiry, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="تاريخ الانتهاء" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <DatePicker SelectedDate="{Binding NewLineExpiryDate}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,10,10"
+                               Visibility="{Binding CurrentHeader.UseBatch, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="رقم الدفعة" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ui:TextBox Text="{Binding NewLineBatchNo}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,10,10"
+                               Visibility="{Binding CurrentHeader.UseSerial, Converter={StaticResource BoolToVisibilityConverter}}">
+                        <TextBlock Text="الرقم التسلسلي" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ui:TextBox Text="{Binding NewLineSerialNo}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="3" Grid.ColumnSpan="2" Margin="0,0,10,10">
+                        <TextBlock Text="ملاحظات السطر" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                        <ui:TextBox Text="{Binding NewLineNotes}"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="5" Margin="0,0,0,10" VerticalAlignment="Bottom">
+                        <ui:Button Content="إلغاء"
+                                  Command="{Binding CancelEditCommand}"
+                                  Appearance="Secondary"
+                                  Icon="{ui:SymbolIcon Dismiss24}"
+                                  Visibility="{Binding IsEditing, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    </StackPanel>
+                </Grid>
+            </Expander>
+
+            <!-- جدول التفاصيل -->
+            <DataGrid Grid.Row="1" 
+                     ItemsSource="{Binding Details}"
+                     SelectedItem="{Binding SelectedDetail}"
+                     AutoGenerateColumns="False"
+                     CanUserAddRows="False"
+                     CanUserDeleteRows="False"
+                     IsReadOnly="True"
+                     GridLinesVisibility="Horizontal"
+                     HeadersVisibility="Column"
+                     SelectionMode="Single">
+                
+                <DataGrid.Columns>
+                    <!-- رقم السطر -->
+                    <DataGridTextColumn Header="م" Width="50" Binding="{Binding LineID}"/>
+                    
+                    <!-- الصنف -->
+                    <DataGridTextColumn Header="الصنف" Width="200" Binding="{Binding ItemInfo}"/>
+                    
+                    <!-- المخزن -->
+                    <DataGridTextColumn Header="المخزن" Width="150" Binding="{Binding WarehouseInfo}"/>
+                    
+                    <!-- الوحدة -->
+                    <DataGridTextColumn Header="الوحدة" Width="100" Binding="{Binding UnitInfo}"/>
+                    
+                    <!-- الكمية -->
+                    <DataGridTextColumn Header="الكمية" Width="100" 
+                                       Binding="{Binding Qty, Converter={StaticResource QuantityConverter}}"/>
+                    
+                    <!-- تكلفة الوحدة -->
+                    <DataGridTextColumn Header="تكلفة الوحدة" Width="120" 
+                                       Binding="{Binding InitialUnitCost, Converter={StaticResource CurrencyConverter}}"/>
+                    
+                    <!-- الإجمالي -->
+                    <DataGridTextColumn Header="الإجمالي" Width="120" 
+                                       Binding="{Binding TotalCost, Converter={StaticResource CurrencyConverter}}"/>
+                    
+                    <!-- تاريخ الانتهاء -->
+                    <DataGridTextColumn Header="تاريخ الانتهاء" Width="100" 
+                                       Binding="{Binding ExpiryDate, Converter={StaticResource DateConverter}}"
+                                       Visibility="{Binding DataContext.CurrentHeader.UseExpiry, 
+                                                   RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                   Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    
+                    <!-- رقم الدفعة -->
+                    <DataGridTextColumn Header="رقم الدفعة" Width="100" Binding="{Binding BatchNo}"
+                                       Visibility="{Binding DataContext.CurrentHeader.UseBatch, 
+                                                   RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                   Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    
+                    <!-- الرقم التسلسلي -->
+                    <DataGridTextColumn Header="الرقم التسلسلي" Width="120" Binding="{Binding SerialNo}"
+                                       Visibility="{Binding DataContext.CurrentHeader.UseSerial, 
+                                                   RelativeSource={RelativeSource AncestorType=UserControl}, 
+                                                   Converter={StaticResource BoolToVisibilityConverter}}"/>
+                    
+                    <!-- الملاحظات -->
+                    <DataGridTextColumn Header="الملاحظات" Width="*" Binding="{Binding LineNotes}"/>
+                    
+                    <!-- أزرار العمليات -->
+                    <DataGridTemplateColumn Header="العمليات" Width="100">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                    <ui:Button Icon="{ui:SymbolIcon Edit24}" 
+                                              ToolTip="تعديل"
+                                              Margin="2"
+                                              Width="30" Height="30"
+                                              IsEnabled="{Binding DataContext.CanEdit, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                    
+                                    <ui:Button Icon="{ui:SymbolIcon Delete24}" 
+                                              ToolTip="حذف"
+                                              Margin="2"
+                                              Width="30" Height="30"
+                                              Command="{Binding DataContext.DeleteDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              CommandParameter="{Binding}"
+                                              IsEnabled="{Binding DataContext.CanEdit, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                              Appearance="Danger"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- شريط الحالة -->
+        <Border Grid.Row="3" Background="White" 
+                BorderBrush="LightGray" 
+                BorderThickness="0,1,0,0" Padding="10,5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" Text="{Binding StatusMessage}" 
+                          VerticalAlignment="Center"
+                          Foreground="Gray"/>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <TextBlock Text="عدد الأسطر: " VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding Details.Count}" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    
+                    <Separator Margin="10,0"/>
+                    
+                    <ui:ProgressRing IsIndeterminate="True" 
+                                    Width="16" Height="16"
+                                    Visibility="{Binding IsLoading, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

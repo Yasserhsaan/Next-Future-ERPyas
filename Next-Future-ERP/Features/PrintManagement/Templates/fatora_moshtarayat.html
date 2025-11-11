@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>فاتورة مشتريات - قالب افتراضي</title>
+<style>
+  body { font-family: "Tahoma", "Segoe UI", Arial; direction: rtl; margin: 12px; }
+  table { width:100%; border-collapse: collapse; margin-top: 6px; }
+  th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+</style>
+</head>
+<body>
+  <h2 style="text-align:center;">فاتورة مشتريات</h2>
+  <div>المورد: <strong>{{supplier.name}}</strong> - رقم المورد: {{supplier.code}}</div>
+  <div>رقم الفاتورة: {{invoice.number}} &nbsp; | &nbsp; التاريخ: {{invoice.date}}</div>
+
+  <table>
+    <thead><tr><th>الرمز</th><th>البيان</th><th>الكمية</th><th>الوحدة</th><th>سعر الوحدة</th><th>الاجمالي</th></tr></thead>
+    <tbody>
+      {{#invoice.items}}
+      <tr>
+        <td>{{code}}</td>
+        <td style="text-align:right;">{{name}}</td>
+        <td>{{qty}}</td>
+        <td>{{uom}}</td>
+        <td>{{unit_price}}</td>
+        <td>{{line_total}}</td>
+      </tr>
+      {{/invoice.items}}
+    </tbody>
+  </table>
+
+  <div style="margin-top:12px;">الإجمالي: <strong>{{totals.total}}</strong></div>
+  <div style="margin-top:20px;">توقيع: ____________________</div>
+</body>
+</html>

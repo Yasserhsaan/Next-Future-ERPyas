@@ -1,0 +1,201 @@
+<ui:FluentWindow
+    x:Class="Next_Future_ERP.Features.PosStations.Views.PosStationEditWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:controls="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+    xmlns:helpers="clr-namespace:Next_Future_ERP.Features.PosStations.Converters"
+    mc:Ignorable="d"
+    Title="{Binding WindowTitle}"
+    Height="600" Width="900"
+    FlowDirection="RightToLeft"
+    WindowStartupLocation="CenterOwner"
+               ResizeMode="CanResizeWithGrip"
+               UseLayoutRounding="True"
+               SnapsToDevicePixels="True"
+               FontSize="14"
+               Loaded="Window_Loaded">
+
+    <!-- موارد بسيطة وآمنة -->
+    <ui:FluentWindow.Resources>
+        <helpers:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <helpers:StatusToTextConverter x:Key="StatusToTextConverter"/>
+        
+        <Style TargetType="TextBlock" x:Key="Label">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <!-- أيقونات MDL2 -->
+        <Style x:Key="IconText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </ui:FluentWindow.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar
+            x:Name="TitleBar"
+            Title="بيانات نقطة البيع"
+            Grid.Row="0"
+            CloseWindowByDoubleClickOnIcon="True" />
+
+        <!-- شريط علوي -->
+        <controls:Card Grid.Row="1" Padding="12" Margin="0,0,0,12">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button Padding="14,10" Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE74E;"/>
+                            <!-- Save -->
+                            <TextBlock Text="حفظ" FontSize="15"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="14,10" Margin="8,0,0,0" Command="{Binding CancelCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE711;"/>
+                            <!-- Cancel -->
+                            <TextBlock Text="إلغاء" FontSize="15"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </controls:Card>
+
+        <!-- المحتوى الرئيسي -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <TabControl>
+                <!-- تبويب المعلومات الأساسية -->
+                <TabItem Header="المعلومات الأساسية">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- كود نقطة البيع (أول سطر) -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="كود نقطة البيع *" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" 
+                                     Text="{Binding Station.PosCode, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="True"
+                                     Background="#F5F5F5"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- اسم نقطة البيع -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="اسم نقطة البيع *" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" 
+                                     Text="{Binding Station.PosName, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- المستخدم المسند -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="المستخدم المسند *" Style="{StaticResource Label}"/>
+                            <ComboBox x:Name="UsersComboBox" Grid.Row="2" Grid.Column="1" 
+                                      ItemsSource="{Binding Users}" 
+                                      DisplayMemberPath="Name"
+                                      SelectedValuePath="ID"
+                                      SelectedValue="{Binding Station.AssignedUser, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- الفرع -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="الفرع *" Style="{StaticResource Label}"/>
+                            <ComboBox x:Name="BranchesComboBox" Grid.Row="3" Grid.Column="1" 
+                                      ItemsSource="{Binding Branches}" 
+                                      DisplayMemberPath="BranchName"
+                                      SelectedValuePath="BranchId"
+                                      SelectedValue="{Binding Station.BranchId, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+
+                <!-- تبويب الحسابات المحاسبية -->
+                <TabItem Header="الحسابات المحاسبية">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- حساب النقدية -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="حساب النقدية *" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" 
+                                     Text="{Binding Station.GlCashAccount, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- حساب المبيعات -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="حساب المبيعات *" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" 
+                                     Text="{Binding Station.GlSalesAccount, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+
+                <!-- تبويب إعدادات نقطة البيع -->
+                <TabItem Header="إعدادات نقطة البيع">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- طرق الدفع المسموح بها -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="طرق الدفع المسموح بها" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" 
+                                     Text="{Binding Station.AllowedPaymentMethods, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- صلاحيات المستخدم -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="صلاحيات المستخدم" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" 
+                                     Text="{Binding Station.UserPermissions, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- نشط -->
+                            <CheckBox Grid.Row="2" Grid.Column="1" 
+                                      IsChecked="{Binding Station.IsActive, Mode=TwoWay}" 
+                                      Content="نشط" VerticalAlignment="Center" Margin="0,0,0,12"/>
+
+                            <!-- الشركة -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="الشركة" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" 
+                                     Text="{Binding Station.CompanyId, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="True"
+                                     Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+    </Grid>
+</ui:FluentWindow>

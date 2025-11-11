@@ -1,0 +1,84 @@
+﻿<UserControl x:Class="Next_Future_ERP.Features.InitialSystem.Views.Pages.AccountingSetupPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:vm="clr-namespace:Next_Future_ERP.Features.InitialSystem.ViewModels"
+             mc:Ignorable="d"
+             FlowDirection="RightToLeft"
+             d:DesignHeight="600" d:DesignWidth="500">
+
+    
+
+    <Grid>
+        <Border Background="{DynamicResource ControlBackgroundBrush}" CornerRadius="8" Padding="24">
+            <StackPanel>
+
+                <!-- Step Title -->
+                <ui:TextBlock Text="الإعدادات المحاسبية" 
+                              FontSize="20" 
+                              FontWeight="Bold" 
+                              TextAlignment="Center"
+                              Margin="0,0,0,10"/>
+
+                <!-- Branch -->
+                <StackPanel>
+                    <ui:TextBlock Text="الفرع:" />
+                    <ui:TextBox Text="{Binding BranchName}" IsEnabled="False" />
+                   
+                </StackPanel>
+
+                <!-- Fiscal Year -->
+                <StackPanel>
+                    <ui:TextBlock Text="السنة المالية:" />
+                    <ui:TextBox Text="{Binding FiscalYear}" IsEnabled="False" />
+                </StackPanel>
+
+                <!-- Current Month -->
+                <StackPanel>
+                    <ui:TextBlock Text="الشهر الحالي:" />
+                    <ComboBox
+                    ItemsSource="{Binding Months}"
+                    SelectedItem="{Binding CurrentMonth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                   
+                    />      
+                </StackPanel>
+
+                <!-- Default Accounts -->
+                <StackPanel>
+                    <ui:TextBlock Text="الحساب النقدي الافتراضي:" />
+                    <ui:TextBox Text="{Binding DefaultCashAccount}" />
+                </StackPanel>
+
+                <StackPanel>
+                    <ui:TextBlock Text="الحساب البنكي الافتراضي:" />
+                    <ui:TextBox Text="{Binding DefaultBankAccount}" />
+                </StackPanel>
+
+                <StackPanel>
+                    <ui:TextBlock Text="حساب المخزون الافتراضي:" />
+                    <ui:TextBox Text="{Binding DefaultInventoryAccount}" />
+                </StackPanel>
+
+                <StackPanel>
+                    <ui:TextBlock Text="حساب الأرباح والخسائر:" />
+                    <ui:TextBox Text="{Binding ProfitAndLossAccount}" />
+                </StackPanel>
+
+                <!-- Auto Posting -->
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <CheckBox IsChecked="{Binding AutoPosting}" />
+                    <ui:TextBlock Text="تفعيل الترحيل التلقائي" VerticalAlignment="Center"/>
+                    <ComboBox ItemsSource="{Binding ChartTypes}" 
+                                 SelectedItem="{Binding SelectedChartType}" 
+                                 Width="150"
+                                 IsEnabled="{Binding AutoPosting}" />
+                </StackPanel>
+
+                
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
+

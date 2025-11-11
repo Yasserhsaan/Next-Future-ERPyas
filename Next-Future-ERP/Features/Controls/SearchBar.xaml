@@ -1,0 +1,206 @@
+﻿<UserControl x:Class="Next_Future_ERP.Features.Controls.SearchBar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d"
+             d:DesignWidth="520" d:DesignHeight="44"
+             FlowDirection="RightToLeft"
+             Language="ar-SA"
+             FontFamily="Segoe UI, Cairo, Noto Naskh Arabic"
+             TextOptions.TextFormattingMode="Display"
+             TextOptions.TextRenderingMode="ClearType">
+
+    <!-- ========== Theme Tokens (يمكن تبديلها مركزياً لاحقاً) ========== -->
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="Clr.Surface" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="Clr.Border"  Color="#D9E2EC"/>
+        <SolidColorBrush x:Key="Clr.Focus"   Color="#0A6ED1"/>
+        <SolidColorBrush x:Key="Clr.Icon"    Color="#1F5F8B"/>
+        <SolidColorBrush x:Key="Clr.Icon2"   Color="#3E84B3"/>
+        <SolidColorBrush x:Key="Clr.Muted"   Color="#7A8CA5"/>
+        <SolidColorBrush x:Key="Clr.Hover"   Color="#F3F7FB"/>
+        <SolidColorBrush x:Key="Clr.Pressed" Color="#EAF2FB"/>
+
+        <CornerRadius x:Key="Radius.M">6</CornerRadius>
+
+        <!-- Paths -->
+        <Geometry x:Key="Icon.Search">M21 21l-5.2-5.2m1.7-4.5a6.2 6.2 0 11-12.4 0 6.2 6.2 0 0112.4 0z</Geometry>
+        <Geometry x:Key="Icon.Refresh">M4 12a8 8 0 111.6 4.8M4 12H1m3 0l2.2 2.2</Geometry>
+        <Geometry x:Key="Icon.Filter">M3 5h18l-7 8v5l-4 2v-7z</Geometry>
+
+        <!-- Watermark TextBox template (نفس فكرة الرد السابق) -->
+        <Style x:Key="WatermarkTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource Clr.Surface}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6,56,6"/>
+            <!-- مساحة لأيقونات داخلية -->
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border x:Name="Bd"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{StaticResource Radius.M}"/>
+
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+
+                            <!-- تلميح -->
+                            <TextBlock x:Name="Watermark"
+                                       IsHitTestVisible="False"
+                                       Margin="10,0,56,0"
+                                       VerticalAlignment="Center"
+                                       Foreground="{StaticResource Clr.Muted}"
+                                       FontStyle="Italic"
+                                       TextTrimming="CharacterEllipsis"
+                                       Text="{TemplateBinding Tag}"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource Clr.Focus}"/>
+                                <Setter TargetName="Bd" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="Watermark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Static sys:String.Empty}">
+                                <Setter TargetName="Watermark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="{x:Null}">
+                                <Setter TargetName="Watermark" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="Watermark" Property="Visibility" Value="Collapsed"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- زر شفاف داخل الحقل -->
+        <Style x:Key="IconBtn" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Clr.Hover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Clr.Pressed}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.5"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- زر فلتر مستقل -->
+        <Style x:Key="FilterBtn" TargetType="Button" BasedOn="{StaticResource IconBtn}">
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Clr.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Margin" Value="6,0,0,0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="{StaticResource Radius.M}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Clr.Hover}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{StaticResource Clr.Pressed}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <!-- ========== Layout ========== -->
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- حقل البحث مع الأيقونات الداخلية -->
+        <Grid Grid.Column="0">
+            <TextBox x:Name="PART_TextBox"
+                     Style="{StaticResource WatermarkTextBox}"
+                     Text="{Binding Text, RelativeSource={RelativeSource AncestorType=UserControl}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Tag="{Binding Placeholder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                     ToolTip="{Binding Placeholder, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                     KeyDown="PART_TextBox_KeyDown"/>
+
+            <!-- أيقونات داخلية (يسار في RTL) -->
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Margin="8,0,0,0">
+                <!-- بحث -->
+                <Button Style="{StaticResource IconBtn}"
+                        Command="{Binding SearchCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Click="Search_Click"
+                        ToolTip="بحث">
+                    <Path Data="{StaticResource Icon.Search}"
+                          Stroke="{StaticResource Clr.Icon}"
+                          StrokeThickness="1.7"
+                          Stretch="Uniform"
+                          Width="18" Height="18"/>
+                </Button>
+
+                <!-- تحديث -->
+                <Button Style="{StaticResource IconBtn}"
+                        Command="{Binding RefreshCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Click="Refresh_Click"
+                        ToolTip="تحديث"
+                        Margin="2,0,0,0">
+                    <Path Data="{StaticResource Icon.Refresh}"
+                          Stroke="{StaticResource Clr.Icon2}"
+                          StrokeThickness="1.7"
+                          Stretch="Uniform"
+                          Width="18" Height="18"/>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- زر الفلترة -->
+        <Button Grid.Column="1"
+                Style="{StaticResource FilterBtn}"
+                Command="{Binding FilterCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                Click="Filter_Click"
+                ToolTip="خيارات الفلترة">
+            <Path Data="{StaticResource Icon.Filter}"
+                  Stroke="{StaticResource Clr.Icon}"
+                  StrokeThickness="1.7"
+                  Width="16" Height="16" Stretch="Uniform"/>
+        </Button>
+    </Grid>
+</UserControl>

@@ -1,0 +1,129 @@
+﻿<Page x:Class="Next_Future_ERP.Features.Warehouses.Views.UnitsPage"  
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"  
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"  
+      xmlns:viewmodels="clr-namespace:Next_Future_ERP.Features.Warehouses.ViewModels"  
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"  
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"  
+      mc:Ignorable="d"  
+      FlowDirection="RightToLeft">
+
+    <!--<Page.DataContext>
+        <viewmodels:UnitsViewModel />
+    </Page.DataContext>-->
+
+    <Grid>  
+        <Grid.RowDefinitions>  
+            <RowDefinition Height="Auto" />  
+            <RowDefinition Height="Auto" />  
+        </Grid.RowDefinitions>  
+
+        <!-- Main Layout -->  
+        <Grid Grid.Row="0">  
+            <Grid.ColumnDefinitions>  
+                <ColumnDefinition Width="3*" />  
+                <ColumnDefinition Width="2*" />  
+            </Grid.ColumnDefinitions>  
+
+            <!-- Right Side: Form -->  
+            <StackPanel Grid.Column="0" Margin="10">  
+                <!-- Group: Unit Info -->  
+                <GroupBox Header="معلومات الوحدة" Padding="10" Margin="0,0,0,10">  
+                    <StackPanel>  
+                        <TextBlock Text="الرمز:" />  
+                        <TextBox Text="{Binding SelectedUnit.UnitCode}" />  
+
+                        <TextBlock Text="الاسم:" />
+                        <TextBox Text="{Binding SelectedUnit.UnitName}" />
+                    </StackPanel>  
+                </GroupBox>  
+
+                <!-- Group: Unit Properties -->  
+                <GroupBox Header="الخصائص" Padding="10" Margin="0,0,0,10">  
+                    <StackPanel>  
+                        <!-- نوع الوحدة -->  
+                        <TextBlock Text="نوع الوحدة:" />  
+                        <ComboBox ItemsSource="{Binding UnitTypes}"  
+              SelectedValuePath="Key"  
+              DisplayMemberPath="Values"  
+              SelectedValue="{Binding SelectedUnit.UnitType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />  
+
+                        <TextBlock Text="تصنيف الوحدة:" />  
+                        <ComboBox ItemsSource="{Binding FilteredUnitClasses}"  
+          SelectedValuePath="Key"  
+          DisplayMemberPath="Values"  
+          SelectedValue="{Binding SelectedUnit.UnitClass, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="الوحدة الأساسية:" />
+                        <ComboBox ItemsSource="{Binding FilteredBaseUnits}"  
+          SelectedValuePath="UnitID"  
+          DisplayMemberPath="UnitName"  
+          SelectedValue="{Binding SelectedUnit.BaseUnitID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+
+                        <TextBlock Text="معامل التحويل:" />  
+                        <TextBox Text="{Binding SelectedUnit.ConversionFactor}" />  
+
+                        <CheckBox Content="نشط" IsChecked="{Binding SelectedUnit.IsActive}" />  
+                    </StackPanel>  
+                </GroupBox>  
+
+                <!-- Group: Actions -->  
+                <GroupBox Header="الخيارات" Padding="10">  
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">  
+                        <ui:Button Content="جديد" Command="{Binding AddNewCommand}" Appearance="Secondary" Margin="5,0"/>  
+                        <ui:Button Content="حفظ" Command="{Binding SaveCommand}" Appearance="Primary" Margin="5,0"/>  
+                    </StackPanel>  
+                </GroupBox>  
+            </StackPanel>  
+
+            <!-- Left Side: Table -->  
+            <GroupBox  Header="الوحدات المسجلة" Grid.Column="1" Padding="10" Margin="10,0,0,0">  
+                <DataGrid   
+                    ItemsSource="{Binding Units}"  
+                    SelectedItem="{Binding SelectedUnit}"  
+                    AutoGenerateColumns="False"  
+                    CanUserAddRows="False"  
+                    FontSize="13"  
+                    RowHeight="30"  
+                    IsReadOnly="True">  
+                    <DataGrid.Columns>  
+                        <DataGridTextColumn Header="الرمز" Binding="{Binding UnitCode}" />  
+                        <DataGridTextColumn Header="الاسم" Binding="{Binding UnitName}" />  
+                        <DataGridTextColumn Header="المعامل" Binding="{Binding ConversionFactor}" />  
+                        <DataGridTextColumn Header="الوحدة الأساسية" Binding="{Binding BaseUnitID}" />  
+                    </DataGrid.Columns>  
+                </DataGrid>  
+            </GroupBox>  
+        </Grid>  
+
+        <!-- Bottom Info Bar -->  
+        <!--<Border Grid.Row="1" BorderThickness="1,0,0,0" BorderBrush="#DDD" Padding="10">  
+            <Grid>  
+                <Grid.ColumnDefinitions>  
+                    <ColumnDefinition Width="Auto"/>  
+                    <ColumnDefinition Width="150"/>  
+                    <ColumnDefinition Width="Auto"/>  
+                    <ColumnDefinition Width="150"/>  
+                    <ColumnDefinition Width="Auto"/>  
+                    <ColumnDefinition Width="150"/>  
+                    <ColumnDefinition Width="*" />  
+                </Grid.ColumnDefinitions>  
+
+                --><!-- Isolation Code --><!--  
+                <TextBlock Text="رمز العزل" VerticalAlignment="Center" Grid.Column="0" Margin="5,0"/>  
+                <TextBox Grid.Column="1" Height="26" Margin="5,0"/>  
+
+                --><!-- Record Count --><!--  
+                <TextBlock Text="Record Count" VerticalAlignment="Center" Grid.Column="2" Margin="5,0"/>  
+                <TextBox Grid.Column="3" Height="26" Margin="5,0"/>  
+
+                --><!-- Timestamp --><!--  
+                <TextBlock Text="20/08/2017 092" VerticalAlignment="Center" Grid.Column="4" Margin="5,0"/>  
+
+                --><!-- User Balance --><!--  
+                <TextBlock Text="User Balance" VerticalAlignment="Center" Grid.Column="5" Margin="5,0"/>  
+                <TextBox Grid.Column="6" Height="26" Margin="5,0"/>  
+            </Grid>  
+        </Border>-->  
+    </Grid>  
+</Page>

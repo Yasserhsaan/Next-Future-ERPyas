@@ -1,0 +1,324 @@
+<Window x:Class="Next_Future_ERP.Features.Accounts.Views.DebitCreditNotificationEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="clr-namespace:Next_Future_ERP.Features.Accounts.Models"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        Title="{Binding WindowTitle}" Height="900" Width="1200"
+        WindowStartupLocation="CenterOwner"
+        FlowDirection="RightToLeft"
+        Background="#F7F9FC"
+        ResizeMode="CanResizeWithGrip"
+        MinWidth="1000" MinHeight="700"
+        Loaded="Window_Loaded">
+
+    <Window.InputBindings>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveAsyncCommand}"/>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
+    </Window.InputBindings>
+
+    <Window.Resources>
+        <!-- ألوان محلية -->
+        <SolidColorBrush x:Key="AccentBrush" Color="#FF2563EB"/>
+        <SolidColorBrush x:Key="AccentTextBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="CardBorderBrush" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="SuccessBrush" Color="#10B981"/>
+        <SolidColorBrush x:Key="ErrorBrush" Color="#EF4444"/>
+        <SolidColorBrush x:Key="WarningBrush" Color="#F59E0B"/>
+
+        <ObjectDataProvider x:Key="DCTypeValues"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:DebitCreditType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+
+        <!-- أزرار الشريط -->
+        <Style x:Key="IconButton" TargetType="Button">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="MinWidth" Value="100"/>
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource AccentTextBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="6"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#1E40AF"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#1E3A8A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- تنسيق الملصقات والحقول -->
+        <Style x:Key="FormLabel" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#374151"/>
+        </Style>
+
+        <Style x:Key="RightAlignedText" TargetType="TextBlock">
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+        </Style>
+
+        <Style x:Key="RightAlignedTextBox" TargetType="TextBox">
+            <Setter Property="TextAlignment" Value="Right"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- GroupBox بشكل بطاقة -->
+        <Style TargetType="GroupBox">
+            <Setter Property="Margin" Value="0,8,0,8"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GroupBox">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{StaticResource CardBackgroundBrush}"
+                                CornerRadius="8">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                
+                                <!-- رأس البطاقة -->
+                                <Border Grid.Row="0" 
+                                        Background="{StaticResource AccentBrush}"
+                                        CornerRadius="8,8,0,0"
+                                        Padding="16,12">
+                                    <ContentPresenter ContentSource="Header"
+                                                      TextElement.Foreground="{StaticResource AccentTextBrush}"
+                                                      TextElement.FontWeight="SemiBold"
+                                                      TextElement.FontSize="14"/>
+                                </Border>
+                                
+                                <!-- محتوى البطاقة -->
+                                <ContentPresenter Grid.Row="1" 
+                                                  Margin="16"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DataGrid تحسينات -->
+        <Style TargetType="DataGrid">
+            <Setter Property="RowHeight" Value="34"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="AlternationCount" Value="2"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Setter Property="Background" Value="{x:Null}"/>
+            <Style.Triggers>
+                <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                    <Setter Property="Background" Value="#FFF7F7F7"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <!-- =================== Main Layout =================== -->
+    <DockPanel>
+        <!-- شريط الأوامر السفلي -->
+        <Border DockPanel.Dock="Bottom" 
+                Background="{StaticResource CardBackgroundBrush}"
+                BorderBrush="{StaticResource CardBorderBrush}"
+                BorderThickness="0,1,0,0"
+                Padding="16,12">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="💾 حفظ" 
+                        Command="{Binding SaveAsyncCommand}" 
+                        Style="{StaticResource IconButton}"
+                        Background="{StaticResource AccentBrush}"
+                        Foreground="White"
+                        MinWidth="120"/>
+                <Separator Width="1" Height="24" Background="{StaticResource CardBorderBrush}" Margin="8,0"/>
+                <Button Content="إلغاء" 
+                        Command="{Binding CancelCommand}" 
+                        Style="{StaticResource IconButton}"
+                        MinWidth="100"/>
+            </StackPanel>
+        </Border>
+
+        <!-- المحتوى الرئيسي -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="16">
+            <StackPanel>
+                <!-- ========= البيانات الرئيسية ========= -->
+                <GroupBox Header="البيانات الرئيسية">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="24"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="8"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <TextBlock Text="الفرع" Style="{StaticResource FormLabel}"/>
+                        <ComboBox Grid.Column="2"
+                                  ItemsSource="{Binding BranchOptions}"
+                                  SelectedValue="{Binding SelectedBranchId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValuePath="BranchId"
+                                  DisplayMemberPath="BranchName"
+                                  MinWidth="200"
+                                  IsEnabled="{Binding IsHeaderEnabled}"/>
+
+                        <TextBlock Grid.Column="4" Text="نوع الإشعار" Style="{StaticResource FormLabel}"/>
+                        <ComboBox Grid.Column="6"
+                                  ItemsSource="{Binding Source={StaticResource DCTypeValues}}"
+                                  SelectedValue="{Binding DCType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  MinWidth="140"
+                                  IsEnabled="{Binding IsHeaderEnabled}"/>
+
+                        <TextBlock Grid.Row="2" Text="رقم الحساب" Style="{StaticResource FormLabel}"/>
+                        <ComboBox Grid.Row="2" Grid.Column="2"
+                                  ItemsSource="{Binding AccountOptions}"
+                                  SelectedValuePath="AccountNumber"
+                                  DisplayMemberPath="AccountNameAr"
+                                  SelectedValue="{Binding SelectedAccountNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  IsEditable="True" MinWidth="200"
+                                  IsEnabled="{Binding IsHeaderEnabled}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="4" Text="العملة" Style="{StaticResource FormLabel}"/>
+                        <ComboBox Grid.Row="2" Grid.Column="6"
+                                  ItemsSource="{Binding CurrencyOptions}"
+                                  SelectedValue="{Binding SelectedCurrencyId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  SelectedValuePath="CurrencyId"
+                                  DisplayMemberPath="CurrencyNameAr"
+                                  MinWidth="200"
+                                  IsEnabled="{Binding IsHeaderEnabled}"/>
+
+                        <TextBlock Grid.Row="4" Text="تاريخ الإشعار" Style="{StaticResource FormLabel}"/>
+                        <DatePicker Grid.Row="4" Grid.Column="2"
+                                    SelectedDate="{Binding Notification.NotificationDate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding IsHeaderEnabled}"/>
+                    </Grid>
+                </GroupBox>
+
+                <!-- ========= تفاصيل الإشعار ========= -->
+                <GroupBox Header="تفاصيل الإشعار">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,8">
+                            <Button Content="➕ إضافة صف" 
+                                    Style="{StaticResource IconButton}" 
+                                    Command="{Binding AddRowCommand}" 
+                                    IsEnabled="{Binding IsEditing}"
+                                    Background="{StaticResource SuccessBrush}"
+                                    Foreground="White"/>
+                        </StackPanel>
+
+                        <DataGrid ItemsSource="{Binding DetailRows}"
+                                  AutoGenerateColumns="False"
+                                  CanUserAddRows="False"
+                                  IsReadOnly="{Binding IsView}">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="البيان"
+                                                    Binding="{Binding Statement, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    MinWidth="220"/>
+
+                                <DataGridTextColumn Header="مبلغ العملية"
+                                                    Binding="{Binding AmountTransaction, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"
+                                                    MinWidth="140">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource RightAlignedText}"/>
+                                    </DataGridTextColumn.ElementStyle>
+                                    <DataGridTextColumn.EditingElementStyle>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource RightAlignedTextBox}"/>
+                                    </DataGridTextColumn.EditingElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="سعر التحويل"
+                                                    Binding="{Binding ExchangeRate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N6}"
+                                                    MinWidth="120">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource RightAlignedText}"/>
+                                    </DataGridTextColumn.ElementStyle>
+                                    <DataGridTextColumn.EditingElementStyle>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource RightAlignedTextBox}"/>
+                                    </DataGridTextColumn.EditingElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTextColumn Header="مبلغ الشركة"
+                                                    Binding="{Binding AmountCompany, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"
+                                                    MinWidth="140">
+                                    <DataGridTextColumn.ElementStyle>
+                                        <Style TargetType="TextBlock" BasedOn="{StaticResource RightAlignedText}"/>
+                                    </DataGridTextColumn.ElementStyle>
+                                    <DataGridTextColumn.EditingElementStyle>
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource RightAlignedTextBox}"/>
+                                    </DataGridTextColumn.EditingElementStyle>
+                                </DataGridTextColumn>
+
+                                <DataGridTemplateColumn Header="حذف" Width="64">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.RemoveRowCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                                    CommandParameter="{Binding}"
+                                                    ToolTip="حذف الصف"
+                                                    IsEnabled="{Binding DataContext.IsEditing, RelativeSource={RelativeSource AncestorType=Window}}">
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE74D;"/>
+                                            </Button>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </GroupBox>
+
+                <!-- ========= Status ========= -->
+                <StatusBar Margin="0,8,0,0">
+                    <StatusBarItem>
+                        <TextBlock Text="{Binding Notification.TotalAmount, StringFormat=إجمالي الشركة: {0:N4}}"/>
+                    </StatusBarItem>
+                    <StatusBarItem>
+                        <CheckBox Content="مُرحّل" IsChecked="{Binding Notification.Status, Mode=TwoWay}" IsEnabled="{Binding IsHeaderEnabled}"/>
+                    </StatusBarItem>
+                </StatusBar>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
+

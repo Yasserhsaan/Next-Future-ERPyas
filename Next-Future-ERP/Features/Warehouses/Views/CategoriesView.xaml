@@ -1,0 +1,90 @@
+<Page x:Class="Next_Future_ERP.Features.Warehouses.Views.CategoriesView"  
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"  
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"  
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"  
+      xmlns:viewmodels="clr-namespace:Next_Future_ERP.Features.Warehouses.ViewModels"  
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"  
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"  
+      mc:Ignorable="d"  
+      FlowDirection="RightToLeft">
+
+    <!--<Page.DataContext>
+        <viewmodels:CategoriesViewModel />
+    </Page.DataContext>-->
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="2*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Panel - Categories Tree -->
+        <GroupBox Header="الفئات" Grid.Column="1" Margin="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                                <TreeView Grid.Row="0" 
+                          ItemsSource="{Binding CategoryTreeItems}" 
+                          SelectedItemChanged="TreeView_SelectedItemChanged">
+                    <TreeView.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                            <StackPanel Orientation="Horizontal">
+                              
+                                <TextBlock Text="{Binding CategoryName}" />
+                            </StackPanel>
+                        </HierarchicalDataTemplate>
+                    </TreeView.ItemTemplate>
+                </TreeView>
+
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                    <ui:Button Content="جديد" Command="{Binding AddNewCommand}" Appearance="Secondary" Margin="5,0"/>
+                    <ui:Button Content="حذف" Command="{Binding DeleteCommand}" Appearance="Danger" Margin="5,0"/>
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+        <!-- Right Panel - Category Details Form -->
+        <GroupBox Header="تفاصيل الفئة" Grid.Column="0" Margin="10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="10">
+                    <!-- Category Code -->
+                    <TextBlock Text="رمز الفئة:" FontWeight="Bold" Margin="0,5,0,2" />
+                    <TextBox Text="{Binding SelectedCategory.CategoryCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                             Margin="0,0,0,10" />
+
+                    <!-- Category Name -->
+                    <TextBlock Text="اسم الفئة:" FontWeight="Bold" Margin="0,5,0,2" />
+                    <TextBox Text="{Binding SelectedCategory.CategoryName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                             Margin="0,0,0,10" />
+
+                    <!-- Parent Category -->
+                    <TextBlock Text="الفئة الرئيسية:" FontWeight="Bold" Margin="0,5,0,2" />
+                    <ComboBox ItemsSource="{Binding ParentCategories}" 
+                              SelectedValuePath="CategoryID" 
+                              DisplayMemberPath="CategoryName" 
+                              SelectedValue="{Binding SelectedCategory.ParentCategoryID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                              Margin="0,0,0,10" />
+
+                    <!-- Description -->
+                    <TextBlock Text="الوصف:" FontWeight="Bold" Margin="0,5,0,2" />
+                    <TextBox Text="{Binding SelectedCategory.Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                             Height="80" TextWrapping="Wrap" AcceptsReturn="True" 
+                             VerticalScrollBarVisibility="Auto" Margin="0,0,0,10" />
+
+                    <!-- Is Active (placeholder for future use) -->
+                    <CheckBox Content="نشط" IsChecked="True" Margin="0,0,0,20" />
+
+                    <!-- Action Buttons -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <ui:Button Content="حفظ" Command="{Binding SaveCommand}" Appearance="Primary" Margin="5,0"/>
+                        <ui:Button Content="إلغاء" Command="{Binding CancelCommand}" Appearance="Secondary" Margin="5,0"/>
+                     
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </GroupBox>
+    </Grid>
+</Page> 

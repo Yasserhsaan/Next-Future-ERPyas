@@ -1,0 +1,78 @@
+<UserControl x:Class="Next_Future_ERP.Features.Items.Views.ItemCostsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             FlowDirection="RightToLeft">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Column="0" Margin="6">
+            <TextBlock Text="طريقة التكلفة" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <ComboBox SelectedValuePath="Tag" SelectedValue="{Binding Edit.CostMethod, Mode=TwoWay}" Width="180">
+                <ComboBoxItem Content="آخر" Tag="L"/>
+                <ComboBoxItem Content="متوسط" Tag="A"/>
+                <ComboBoxItem Content="FIFO" Tag="F"/>
+                <ComboBoxItem Content="متحرك" Tag="M"/>
+            </ComboBox>
+        </StackPanel>
+
+        <StackPanel Grid.Column="1" Margin="6">
+            <TextBlock Text="التكلفة القياسية" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBox Text="{Binding Edit.StandardCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="2" Margin="6">
+            <TextBlock Text="آخر تكلفة شراء" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBox Text="{Binding Edit.LastPurchaseCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Column="3" Margin="6">
+            <TextBlock Text="متوسط متحرك" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBox Text="{Binding Edit.MovingAverageCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="6">
+            <TextBlock Text="FIFO" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBox Text="{Binding Edit.FIFOCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="1" Margin="6">
+            <TextBlock Text="آخر تكلفة" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBox Text="{Binding Edit.LastCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="2" Margin="6">
+            <TextBlock Text="متوسط تكلفة" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <TextBox Text="{Binding Edit.AvgCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Grid.Column="3" Margin="6">
+            <TextBlock Text="أقل/أعلى" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <StackPanel Orientation="Horizontal">
+                <TextBox Width="100" Text="{Binding Edit.MinCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"/>
+                <TextBlock Text="-" Margin="6,0"/>
+                <TextBox Width="100" Text="{Binding Edit.MaxCost, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat=N4}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Margin="6">
+            <TextBlock Text="آخر تاريخ شراء" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            <DatePicker SelectedDate="{Binding Edit.LastPurchaseDate}"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Grid.Column="1" Margin="6">
+            <Button Content="حفظ" Width="140" Command="{Binding SaveCommand}"/>
+        </StackPanel>
+    </Grid>
+</UserControl>
+
+

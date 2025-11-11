@@ -1,0 +1,289 @@
+﻿<Page 
+    x:Class="Next_Future_ERP.Features.StoreSetting.Views.StoreMainV"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:wpfui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:vm="clr-namespace:Next_Future_ERP.Features.StoreSetting.ViewModels"
+    xmlns:m="clr-namespace:Next_Future_ERP.Features.StoreSetting.Models"
+    mc:Ignorable="d"
+    Title="إعدادات المخزون2"
+    FlowDirection="RightToLeft"
+    Background="{DynamicResource ApplicationBackgroundBrush}">
+
+    <Page.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Page.Resources>
+
+    <Page.DataContext>
+        <vm:StoreMainViewModel/>
+    </Page.DataContext>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- الشريط العلوي -->
+        <DockPanel Grid.Row="0" Margin="12">
+            <wpfui:Card Padding="12" HorizontalAlignment="Stretch">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="إعدادات المخزون" FontWeight="Bold" FontSize="16" Margin="0,0,8,0"/>
+                        <TextBlock Text=" | الشركة:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <wpfui:NumberBox Value="{Binding CompanyId, Mode=TwoWay}" Minimum="1" Width="80" Margin="0,0,8,0"/>
+                        <TextBlock Text=" | الفرع:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <wpfui:NumberBox Value="{Binding BranchId, Mode=TwoWay}" Minimum="1" Width="80" Margin="0,0,8,0"/>
+                        <Button Content="تحميل" Command="{Binding LoadAsyncCommand}" Margin="8,0,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <Button Content="إفتراضي" Command="{Binding ResetDefaultsAsyncCommand}" Margin="8,0,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button Content="حفظ" Command="{Binding SaveAsyncCommand}" Margin="8,0,0,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="3" Orientation="Horizontal">
+                        <wpfui:ProgressRing IsIndeterminate="True"
+                                            Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                            Width="28" Height="28"/>
+                    </StackPanel>
+                </Grid>
+            </wpfui:Card>
+        </DockPanel>
+
+        <!-- المحتوى -->
+        <ScrollViewer Grid.Row="1">
+            <!-- Tabs القياسية -->
+            <TabControl Margin="12">
+
+                <!-- المعلومات العامة -->
+                <TabItem Header="المعلومات العامة">
+                    <wpfui:Card Margin="0,8,0,0" Padding="12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="58*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="643*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="المستودع الافتراضي:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding Settings.DefaultWarehouse, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="0" Grid.Column="2"/>
+
+                            <TextBlock Text="حد تنبيه المخزون:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                            <wpfui:NumberBox Value="{Binding Settings.StockAlertThreshold, Mode=TwoWay}" Minimum="0" Grid.Row="2" Grid.Column="2" Width="120"/>
+
+                            <TextBlock Text="طول رقم الصنف:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"/>
+                            <wpfui:NumberBox Value="{Binding Settings.ItemNumberLength, Mode=TwoWay}" Minimum="0" Maximum="50" Grid.Row="4" Grid.Column="2" Width="120"/>
+
+                            <TextBlock Text="طريقة عرض التاريخ:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center"/>
+                            <!-- Enum binding صحيح -->
+                            <ComboBox Grid.Row="6" Grid.Column="2"
+                                      SelectedValue="{Binding Settings.HowDisplayDate, Mode=TwoWay}"
+                                      SelectedValuePath="Tag">
+                                <ComboBoxItem Content="ميلادي" Tag="{x:Static m:DateDisplayMode.Gregorian}"/>
+                                <ComboBoxItem Content="هجري"  Tag="{x:Static m:DateDisplayMode.Hijri}"/>
+                                <ComboBoxItem Content="مخصص" Tag="{x:Static m:DateDisplayMode.Custom}"/>
+                            </ComboBox>
+                        </Grid>
+                    </wpfui:Card>
+                </TabItem>
+
+                <!-- التقييم والتسعير -->
+                <TabItem Header="التقييم والتسعير">
+                    <wpfui:Card Margin="0,8,0,0" Padding="12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="طريقة التقييم:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="2"
+                                      SelectedValue="{Binding Settings.ValuationMethod, Mode=TwoWay}"
+                                      SelectedValuePath="Tag">
+                                <ComboBoxItem Content="متوسط" Tag="{x:Static m:ValuationMethod.AverageCost}"/>
+                                <ComboBoxItem Content="معياري" Tag="{x:Static m:ValuationMethod.Standard}"/>
+                                <ComboBoxItem Content="LIFO"   Tag="{x:Static m:ValuationMethod.LIFO}"/>
+                                <ComboBoxItem Content="FIFO"   Tag="{x:Static m:ValuationMethod.FIFO}"/>
+                            </ComboBox>
+
+                            <TextBlock Text="سياسة التسعير:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding Settings.PricePolicy, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="2" Grid.Column="2"/>
+
+                            <StackPanel Grid.Row="4" Grid.Column="2" Orientation="Horizontal">
+                                <wpfui:ToggleSwitch Content="السماح بالسالب"
+                                                    IsChecked="{Binding Settings.AllowNegativeStock, Mode=TwoWay}"
+                                                    Margin="0,0,16,0"/>
+                            </StackPanel>
+                        </Grid>
+                    </wpfui:Card>
+                </TabItem>
+
+                <!-- التحكم في المخزون -->
+                <TabItem Header="التحكم في المخزون">
+                    <wpfui:Card Margin="0,8,0,0" Padding="12">
+                        <UniformGrid Columns="2" Rows="0" Margin="0" HorizontalAlignment="Stretch">
+                            <wpfui:ToggleSwitch Content="تتبع الصلاحية" IsChecked="{Binding Settings.EnableExpiryTracking}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="تتبع الأرقام التسلسلية" IsChecked="{Binding Settings.EnableSerialTracking}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="تحويل الوحدات" IsChecked="{Binding Settings.UnitConversion}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="إدارة الدُفعات" IsChecked="{Binding Settings.BatchManagement}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="تعديل تلقائي للمخزون" IsChecked="{Binding Settings.AutoStockAdjustment}" Margin="0,0,8,8"/>
+                        </UniformGrid>
+                    </wpfui:Card>
+                </TabItem>
+
+                <!-- تسلسل الأوامر -->
+                <TabItem Header="تسلسل الأوامر">
+                    <wpfui:Card Margin="0,8,0,0" Padding="12">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="8"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Text="تسلسل الإدخال:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="0" Grid.Column="2"
+                                      SelectedValue="{Binding Settings.InboundOrderSequence, Mode=TwoWay}"
+                                      SelectedValuePath="Tag">
+                                <ComboBoxItem Content="يسمح بالتعديل"  Tag="{x:Static m:SequencePolicy.Editable}"/>
+                                <ComboBoxItem Content="لا يسمح بالتعديل" Tag="{x:Static m:SequencePolicy.Locked}"/>
+                                <ComboBoxItem Content="يدوي لكل"       Tag="{x:Static m:SequencePolicy.ManualPerDoc}"/>
+                            </ComboBox>
+
+                            <TextBlock Text="تسلسل التحويل:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="2" Grid.Column="2"
+                                      SelectedValue="{Binding Settings.TransferOrderSequence, Mode=TwoWay}"
+                                      SelectedValuePath="Tag">
+                                <ComboBoxItem Content="يسمح بالتعديل"  Tag="{x:Static m:SequencePolicy.Editable}"/>
+                                <ComboBoxItem Content="لا يسمح بالتعديل" Tag="{x:Static m:SequencePolicy.Locked}"/>
+                                <ComboBoxItem Content="يدوي لكل"       Tag="{x:Static m:SequencePolicy.ManualPerDoc}"/>
+                            </ComboBox>
+
+                            <TextBlock Text="تسلسل الجرد (رقم):" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"/>
+                            <wpfui:NumberBox Value="{Binding Settings.CountInvortySequence, Mode=TwoWay}" Minimum="0" Grid.Row="4" Grid.Column="2" Width="120"/>
+
+                            <TextBlock Text="تسلسل الإخراج:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Row="6" Grid.Column="2"
+                                      SelectedValue="{Binding Settings.OutboundOrderSequence, Mode=TwoWay}"
+                                      SelectedValuePath="Tag">
+                                <ComboBoxItem Content="يسمح بالتعديل"  Tag="{x:Static m:SequencePolicy.Editable}"/>
+                                <ComboBoxItem Content="لا يسمح بالتعديل" Tag="{x:Static m:SequencePolicy.Locked}"/>
+                                <ComboBoxItem Content="يدوي لكل"       Tag="{x:Static m:SequencePolicy.ManualPerDoc}"/>
+                            </ComboBox>
+                        </Grid>
+                    </wpfui:Card>
+                </TabItem>
+
+                <!-- مراكز التكلفة -->
+                <TabItem Header="مراكز التكلفة">
+                    <wpfui:Card Margin="0,8,0,0" Padding="12">
+                        <UniformGrid Columns="3" Rows="1" Margin="0" HorizontalAlignment="Stretch">
+                            <StackPanel>
+                                <TextBlock Text="Inbound"/>
+                                <wpfui:NumberBox Value="{Binding Settings.MultiCostCenterInbound, Mode=TwoWay}" Minimum="0" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Outbound"/>
+                                <wpfui:NumberBox Value="{Binding Settings.MultiCostCenterOutbound, Mode=TwoWay}" Minimum="0" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="Transfer"/>
+                                <wpfui:NumberBox Value="{Binding Settings.MultiCostCenterTransfer, Mode=TwoWay}" Minimum="0" />
+                            </StackPanel>
+                        </UniformGrid>
+                    </wpfui:Card>
+                </TabItem>
+
+                <!-- الصلاحيات والمستخدم -->
+                <TabItem Header="الصلاحيات والمستخدم">
+                    <wpfui:Card Margin="0,8,0,0" Padding="12">
+                        <UniformGrid Columns="3" Rows="0">
+                            <wpfui:ToggleSwitch Content="متعدد المستخدمين لنفس المستودع" IsChecked="{Binding Settings.MultiInventoryUser}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="أصناف مجمّعة" IsChecked="{Binding Settings.UsingACompositeItem}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="عرض العبوات" IsChecked="{Binding Settings.DisplayingItemPackage}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="الباركود = رقم الدُفعة" IsChecked="{Binding Settings.ItemBarcodesIsBatchNumbers}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="الباركود = الرقم التسلسلي" IsChecked="{Binding Settings.ItemBarcodesIsSerialNumber}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="سماح تكرار الأصناف" IsChecked="{Binding Settings.DuplicateItemsInInventory}" Margin="0,0,8,8"/>
+                        </UniformGrid>
+                    </wpfui:Card>
+                </TabItem>
+
+                <!-- الفواتير والقسائم -->
+                <TabItem Header="الفواتير والقسائم">
+                    <wpfui:Card Margin="0,8,0,0" Padding="12">
+                        <UniformGrid Columns="2" Rows="0">
+                            <wpfui:ToggleSwitch Content="تعديل الوحدة داخل القسيمة" IsChecked="{Binding Settings.AllowingUnitModInVouchers}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="الرقم المرجعي إلزامي" IsChecked="{Binding Settings.ReferenceNumberMandatory}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="البيان/الملاحظة إلزامية" IsChecked="{Binding Settings.StatementEntryMandatory}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="السماح بمنتجات تامة الصنع" IsChecked="{Binding Settings.AllowingTranscetiontOfFinishedGoods}" Margin="0,0,8,8"/>
+                        </UniformGrid>
+                    </wpfui:Card>
+                </TabItem>
+
+                <!-- أنظمة إضافية للصنف -->
+                <TabItem Header="أنظمة إضافية للصنف">
+                    <wpfui:Card Margin="0,8,0,0" Padding="12">
+                        <UniformGrid Columns="2" Rows="0">
+                            <wpfui:ToggleSwitch Content="نظام الوزن" IsChecked="{Binding Settings.UsingAWeightSystem}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="نظام الألوان" IsChecked="{Binding Settings.UsingAColorSystem}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="تعديل الكمية أثناء التحويل" IsChecked="{Binding Settings.AllowingModifiyQuantityInTransfers}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="تضمين مجموعة الصنف" IsChecked="{Binding Settings.IncludingTheGroup}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="مصاريف الاستلام" IsChecked="{Binding Settings.UsingExpensesInReceiving}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="مكونات الصنف (BOM)" IsChecked="{Binding Settings.UsingItemComponents}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="إنشاء رقم الصنف تلقائيًا" IsChecked="{Binding Settings.AutomaticCreatingTheItemNumber}" Margin="0,0,8,8"/>
+                            <wpfui:ToggleSwitch Content="عدد أعمدة رقم الدفعة (Bit وفق الجدول)" IsChecked="{Binding Settings.NumberOfColumnsInBatchNumbers}" Margin="0,0,8,8"/>
+                        </UniformGrid>
+                    </wpfui:Card>
+                </TabItem>
+
+            </TabControl>
+        </ScrollViewer>
+
+        <!-- الشريط السفلي للحالة -->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}" />
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Page>

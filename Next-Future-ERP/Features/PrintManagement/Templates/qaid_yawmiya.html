@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>قيد يومية - قالب افتراضي</title>
+<style>
+  body { font-family: "Tahoma", "Segoe UI", Arial; direction: rtl; margin: 20px; }
+  .header { text-align: center; margin-bottom: 10px; }
+  .meta { display:flex; justify-content: space-between; margin-bottom: 10px; }
+  table { width:100%; border-collapse: collapse; margin-bottom:10px; }
+  th, td { border: 1px solid #ccc; padding: 6px; text-align: right; }
+  .signs { display:flex; justify-content: space-between; margin-top:30px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h2>قيد يومية</h2>
+    <div>اسم الشركة: {{company.name}}</div>
+    <div>العنوان: {{company.address}}</div>
+  </div>
+
+  <div class="meta">
+    <div>رقم القيد: <strong>{{voucher.number}}</strong></div>
+    <div>التاريخ هجري/ميلادي: <strong>{{voucher.date_hijri}} / {{voucher.date_gregorian}}</strong></div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>البيان</th>
+        <th>الحساب المدين</th>
+        <th>مدين ({{currency}})</th>
+        <th>الحساب الدائن</th>
+        <th>دائن ({{currency}})</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- repeat rows -->
+      {{#voucher.entries}}
+      <tr>
+        <td>{{description}}</td>
+        <td>{{debit_account}}</td>
+        <td style="text-align:center;">{{debit_amount}}</td>
+        <td>{{credit_account}}</td>
+        <td style="text-align:center;">{{credit_amount}}</td>
+      </tr>
+      {{/voucher.entries}}
+      <!-- end repeat -->
+      <tr>
+        <td style="text-align:left;"><strong>الإجمالي</strong></td>
+        <td></td>
+        <td style="text-align:center;"><strong>{{totals.debit}}</strong></td>
+        <td></td>
+        <td style="text-align:center;"><strong>{{totals.credit}}</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div>المرجع / رقم المستند: {{voucher.reference}}</div>
+
+  <div class="signs">
+    <div>إعداد: __________________</div>
+    <div>مراجعة: __________________</div>
+    <div>اعتماد: __________________</div>
+  </div>
+</body>
+</html>

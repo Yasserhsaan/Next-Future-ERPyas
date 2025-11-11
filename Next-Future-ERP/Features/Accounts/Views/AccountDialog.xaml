@@ -1,0 +1,160 @@
+﻿<ui:FluentWindow
+    x:Class="Next_Future_ERP.Views.AccountDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:converters="clr-namespace:Next_Future_ERP.Converters"
+    mc:Ignorable="d"
+    Title="بيانات الحساب"
+    Width="800" Height="780"
+    WindowStartupLocation="CenterScreen"
+    Loaded="Window_Loaded">
+
+    <Grid Background="{DynamicResource ApplicationBackgroundBrush}" Margin="20">
+        <Grid.Resources>
+            <converters:ValueEqualsToVisibilityConverter x:Key="EqualsToVisibility"/>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- العنوان -->
+        <Border Grid.Row="0" Background="White" CornerRadius="10" Padding="15" Margin="0,0,0,20" BorderBrush="#DDD" BorderThickness="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock x:Name="lblParentAccount" FontSize="16" FontWeight="Bold" Foreground="#2563EB" Margin="0,0,10,0" Text="الحساب الرئيسي: "/>
+                <TextBlock x:Name="txtAccountType" FontSize="13" Foreground="Gray" Margin="0,0,10,0"/>
+                <TextBlock x:Name="txtAccountLevel" FontSize="13" Foreground="Gray"/>
+            </StackPanel>
+        </Border>
+
+        <!-- نموذج الإدخال -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- العمود الأيسر -->
+            <StackPanel Grid.Column="0" Margin="10,0,20,0">
+                <TextBlock Text="رمز الحساب" FontWeight="Bold" Margin="0,0,0,5"/>
+                <DockPanel Margin="0,0,0,10">
+                    <TextBox x:Name="txtParentCode" Width="150" Height="40" IsEnabled="False" VerticalContentAlignment="Center" FontWeight="Bold" Foreground="Gray" Margin="0,0,10,0"/>
+                    <TextBox x:Name="txtCode" Width="200" Height="40" VerticalContentAlignment="Center"/>
+                </DockPanel>
+
+                <TextBlock Text="الاسم بالإنجليزية" FontWeight="Bold" Margin="0,5,0,5"/>
+                <TextBox x:Name="txtNameEn" Height="35" Margin="0,0,0,10"/>
+
+                <TextBlock Text="تصنيف الحساب" FontWeight="Bold" Margin="0,5,0,5"/>
+                <ComboBox x:Name="cmbAccountClassification" Height="35" SelectedValuePath="AccountClassId" Margin="0,0,0,10" Background="White" Foreground="Black">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding AccountClassAname}" Foreground="Black"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+
+                <TextBlock Text="طبيعة الحساب" FontWeight="Bold" Margin="0,5,0,5"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                    <RadioButton x:Name="radioDebit" Content="مدين" GroupName="NatureGroup" Margin="0,0,20,0"/>
+                    <RadioButton x:Name="radioCredit" Content="دائن" GroupName="NatureGroup"/>
+                </StackPanel>
+
+                <TextBlock Text="ملاحظات" FontWeight="Bold" Margin="0,5,0,5"/>
+                <TextBox x:Name="txtNotes" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="0,0,0,10"/>
+            </StackPanel>
+
+            <!-- العمود الأيمن -->
+            <StackPanel Grid.Column="1" Margin="20,0,10,0">
+                <TextBlock Text="الاسم بالعربية" FontWeight="Bold" Margin="0,0,0,5"/>
+                <TextBox x:Name="txtNameAr" Height="40" Margin="0,0,0,10"/>
+
+                <TextBlock Text="نوع الحساب" FontWeight="Bold" Margin="0,0,0,5"/>
+                <ComboBox x:Name="cmbAccounttype"
+          Height="35"
+          Margin="0,0,0,10"
+          SelectedValuePath="Tag"
+          SelectionChanged="cmbAccounttype_SelectionChanged">
+                    <ComboBoxItem Content="رئيسي" Tag="1"/>
+                    <ComboBoxItem Content="فرعي" Tag="2"/>
+                </ComboBox>
+
+                <!-- عملات الحساب (تظهر عند اختيار نوع فرعي) -->
+                <StackPanel Margin="0,10,0,0"
+                            Visibility="{Binding ElementName=cmbAccounttype, Path=SelectedValue, Converter={StaticResource EqualsToVisibility}, ConverterParameter=2}">
+                    <TextBlock Text="عملات الحساب" FontWeight="Bold" Margin="0,0,0,6"/>
+                    <ItemsControl x:Name="lstAccountCurrencies">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </StackPanel>
+
+
+                <TextBlock Text="نوع التدفق النقدي" FontWeight="Bold" Margin="0,0,0,5"/>
+                <ComboBox x:Name="cmbCashFlowType" Height="35" Margin="0,0,0,10" SelectedValuePath="Tag">
+                    <ComboBoxItem Content="تشغيلي" Tag="1"/>
+                    <ComboBoxItem Content="استثماري" Tag="2"/>
+                    <ComboBoxItem Content="تمويلي" Tag="3"/>
+                    <ComboBoxItem Content="غير محدد" Tag="0"/>
+                </ComboBox>
+
+                <TextBlock Text="درجة الأهمية" FontWeight="Bold" Margin="0,10,0,5"/>
+                <ComboBox x:Name="cmbPriv"
+          Height="35"
+          Background="White"
+          Foreground="Black"
+          Margin="0,0,0,10"/>
+
+                <CheckBox x:Name="chkUsesCostCenter" Content="يستخدم مركز تكلفة؟" Margin="0,0,0,10" FontWeight="Bold"/>
+                <CheckBox x:Name="chkIsActive" Content="مفعل؟" Margin="0,0,0,10" FontWeight="Bold" IsChecked="True"/>
+                <TextBlock Text="فئة التصنيف" FontWeight="Bold" Margin="0,5,0,5"/>
+                <ComboBox x:Name="cmbCategoryOptions"
+          Height="35"
+          SelectedValuePath="CategoryKey"
+          DisplayMemberPath="CategoryNameAr"
+          IsEditable="True"
+          IsTextSearchEnabled="False"
+          StaysOpenOnEdit="True"
+          SelectionChanged="cmbCategoryOptions_SelectionChanged"
+          Loaded="cmbCategoryOptions_Loaded"
+          Margin="0,0,0,10"
+          Background="White"
+          Foreground="Black"/>
+
+
+
+
+
+            </StackPanel>
+            
+        </Grid>
+
+        <!-- أزرار -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button Content="💾 حفظ" Width="120" Margin="5" Click="Save_Click" Background="#2196F3" Foreground="White" FontWeight="Bold"/>
+            <Button Content="❌ إلغاء" Width="100" Margin="5" Click="Cancel_Click"/>
+        </StackPanel>
+
+        <!-- عملات الحساب أسفل النافذة دائمًا -->
+        <Border Grid.Row="3" Background="#F8FAFC" BorderBrush="#E5E7EB" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,16,0,0">
+            <StackPanel>
+                <TextBlock Text="عملات الحساب" FontWeight="SemiBold" Margin="0,0,0,6"/>
+                <ItemsControl x:Name="lstAccountCurrenciesBottom"/>
+            </StackPanel>
+        </Border>
+
+        <ui:TitleBar
+            x:Name="TitleBar"
+            Title="بيانات الحساب"
+            Grid.Row="0"
+            CloseWindowByDoubleClickOnIcon="True" />
+    </Grid>
+</ui:FluentWindow>

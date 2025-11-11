@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Next-Future-ERP": {
+      "commandName": "Project",
+      "remoteDebugEnabled": false,
+      "sqlDebugging": true,
+      "nativeDebugging": false
+    }
+  }
+}

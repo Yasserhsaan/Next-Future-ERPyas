@@ -1,0 +1,193 @@
+<ui:FluentWindow x:Class="Next_Future_ERP.Features.PosOperators.Views.PosOperatorEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:controls="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+        xmlns:helpers="clr-namespace:Next_Future_ERP.Features.PosOperators.Converters"
+        mc:Ignorable="d"
+        Title="{Binding WindowTitle}"
+        Height="600" Width="900"
+        MinWidth="800" MinHeight="500"
+        FlowDirection="RightToLeft"
+        WindowStartupLocation="CenterOwner"
+        Background="#F6F7F9"
+        ResizeMode="CanResizeWithGrip"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        FontSize="14"
+        Loaded="Window_Loaded">
+
+    <ui:FluentWindow.Resources>
+        <helpers:InverseBoolConverter x:Key="InverseBoolConverter"/>
+        <helpers:StatusToTextConverter x:Key="StatusToTextConverter"/>
+        
+        <Style TargetType="TextBlock" x:Key="Label">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <!-- أيقونات MDL2 -->
+        <Style x:Key="IconText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </ui:FluentWindow.Resources>
+
+    <!-- اختصارات -->
+    <Window.InputBindings>
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding SaveCommand}"/>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
+    </Window.InputBindings>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar
+            x:Name="TitleBar"
+            Title="بيانات مشغل نقطة البيع"
+            Grid.Row="0"
+            CloseWindowByDoubleClickOnIcon="True" />
+
+        <!-- شريط علوي -->
+        <controls:Card Grid.Row="1" Padding="12" Margin="0,0,0,12">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button Padding="14,10" Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE74E;"/>
+                            <TextBlock Text="حفظ" FontSize="15"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="14,10" Margin="8,0,0,0" Command="{Binding CancelCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE711;"/>
+                            <TextBlock Text="إلغاء" FontSize="15"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </controls:Card>
+
+        <!-- المحتوى الرئيسي -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <TabControl>
+                <!-- تبويب المعلومات الأساسية -->
+                <TabItem Header="المعلومات الأساسية">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- نقطة البيع -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="نقطة البيع *" Style="{StaticResource Label}"/>
+                            <ComboBox x:Name="PosStationsComboBox" Grid.Row="0" Grid.Column="1" 
+                                      ItemsSource="{Binding PosStations}" 
+                                      DisplayMemberPath="PosName"
+                                      SelectedValuePath="PosId"
+                                      SelectedValue="{Binding PosOperator.PosId, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- المستخدم -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="المستخدم *" Style="{StaticResource Label}"/>
+                            <ComboBox x:Name="UsersComboBox" Grid.Row="1" Grid.Column="1" 
+                                      ItemsSource="{Binding Users}" 
+                                      DisplayMemberPath="Name"
+                                      SelectedValuePath="ID"
+                                      SelectedValue="{Binding PosOperator.UserId, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- مشغل رئيسي -->
+                            <CheckBox Grid.Row="2" Grid.Column="1" 
+                                      Content="مشغل رئيسي" 
+                                      IsChecked="{Binding PosOperator.IsPrimary}" 
+                                      VerticalAlignment="Center" 
+                                      Margin="0,0,0,12"/>
+
+                            <!-- نشط -->
+                            <CheckBox Grid.Row="3" Grid.Column="1" 
+                                      Content="نشط" 
+                                      IsChecked="{Binding PosOperator.IsActive}" 
+                                      VerticalAlignment="Center" 
+                                      Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+
+                <!-- تبويب التواريخ -->
+                <TabItem Header="التواريخ">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- تاريخ البداية -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="تاريخ البداية" Style="{StaticResource Label}"/>
+                            <DatePicker Grid.Row="0" Grid.Column="1" 
+                                        SelectedDate="{Binding PosOperator.StartDate}" 
+                                        Margin="0,0,0,12"/>
+
+                            <!-- تاريخ النهاية -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="تاريخ النهاية" Style="{StaticResource Label}"/>
+                            <DatePicker Grid.Row="1" Grid.Column="1" 
+                                        SelectedDate="{Binding PosOperator.EndDate}" 
+                                        Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+
+                <!-- تبويب الإعدادات -->
+                <TabItem Header="الإعدادات">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- الشركة (للتوضيح، يمكن أن يكون للقراءة فقط أو يتم تحديده تلقائياً) -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="الشركة" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" 
+                                     Text="{Binding PosOperator.CompanyId}" 
+                                     IsReadOnly="True" 
+                                     Margin="0,0,0,12"/>
+
+                            <!-- الفرع -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="الفرع" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" 
+                                     Text="{Binding PosOperator.BranchId}" 
+                                     IsReadOnly="True" 
+                                     Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+    </Grid>
+</ui:FluentWindow>

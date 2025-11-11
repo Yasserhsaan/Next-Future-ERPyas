@@ -1,0 +1,261 @@
+<Window x:Class="Next_Future_ERP.Features.SystemUsers.Views.SystemUserEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.modernwpf.com/2019"
+        Title="{Binding WindowTitle}"
+        Width="800"
+        Height="700"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
+        FlowDirection="RightToLeft"
+        Background="#F7F9FC">
+
+    <Window.Resources>
+        <!-- ألوان عامة -->
+        <SolidColorBrush x:Key="SapBlue" Color="#0A6ED1"/>
+        <SolidColorBrush x:Key="SapPanelBorder" Color="#E5E7EB"/>
+        <SolidColorBrush x:Key="SapSuccess" Color="#0E9F6E"/>
+        <SolidColorBrush x:Key="SapWarning" Color="#D97706"/>
+        <SolidColorBrush x:Key="SapDanger" Color="#DC2626"/>
+
+        <!-- تنسيق عام للنصوص -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#111827"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <!-- تنسيق عام للحقول -->
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <!-- تنسيق عام للـ ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <!-- تنسيق عام للـ CheckBox -->
+        <Style TargetType="CheckBox">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+
+        <!-- تنسيق عام للأزرار -->
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <!-- زر الحفظ -->
+        <Style x:Key="SaveButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="#3B82F6"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderBrush" Value="#2563EB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+
+        <!-- زر الإلغاء -->
+        <Style x:Key="CancelButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#6B7280"/>
+            <Setter Property="BorderBrush" Value="#D1D5DB"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- أزرار أعلى -->
+            <RowDefinition Height="Auto"/> <!-- العنوان -->
+            <RowDefinition Height="*"/>    <!-- المحتوى -->
+            <RowDefinition Height="Auto"/> <!-- شريط الحالة -->
+        </Grid.RowDefinitions>
+
+        <!-- شريط الأزرار أعلى -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="حفظ" Width="130" Style="{StaticResource SaveButton}"
+                    Command="{Binding SaveCommand}" Margin="0,0,10,0"/>
+            <Button Content="إلغاء" Width="110" Style="{StaticResource CancelButton}"
+                    Command="{Binding CancelCommand}"/>
+        </StackPanel>
+
+        <!-- العنوان -->
+        <TextBlock Grid.Row="1" 
+                   Text="{Binding WindowTitle}"
+                   FontSize="24"
+                   FontWeight="Bold"
+                   Foreground="{StaticResource SapBlue}"
+                   HorizontalAlignment="Center"
+                   Margin="0,0,0,20"/>
+
+        <!-- المحتوى الرئيسي -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <TabControl>
+                <!-- تبويب المعلومات الأساسية -->
+                <TabItem Header="المعلومات الأساسية">
+                    <Grid Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- الكود -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="كود المستخدم *"/>
+                        <TextBox Grid.Row="1" Grid.Column="0" 
+                                 Text="{Binding SystemUser.Code, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- الاسم -->
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="الاسم *"/>
+                        <TextBox Grid.Row="1" Grid.Column="1" 
+                                 Text="{Binding SystemUser.Name, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- الاسم الأول -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="الاسم الأول *"/>
+                        <TextBox Grid.Row="3" Grid.Column="0" 
+                                 Text="{Binding SystemUser.FirstName, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- البريد الإلكتروني -->
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="البريد الإلكتروني *"/>
+                        <TextBox Grid.Row="3" Grid.Column="1" 
+                                 Text="{Binding SystemUser.Email, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- الجوال -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="الجوال *"/>
+                        <TextBox Grid.Row="5" Grid.Column="0" 
+                                 Text="{Binding SystemUser.Mobile, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- الهاتف -->
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="الهاتف *"/>
+                        <TextBox Grid.Row="5" Grid.Column="1" 
+                                 Text="{Binding SystemUser.Phone, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- العنوان -->
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="العنوان *"/>
+                        <TextBox Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2"
+                                 Text="{Binding SystemUser.Address, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- الوظيفة -->
+                        <TextBlock Grid.Row="8" Grid.Column="0" Text="الوظيفة"/>
+                        <TextBox Grid.Row="9" Grid.Column="0" 
+                                 Text="{Binding SystemUser.UserJob, UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <!-- الفرع -->
+                        <TextBlock Grid.Row="8" Grid.Column="1" Text="الفرع"/>
+                        <ComboBox Grid.Row="9" Grid.Column="1"
+                                  ItemsSource="{Binding Branches}"
+                                  DisplayMemberPath="BranchName"
+                                  SelectedValuePath="BranchId"
+                                  SelectedValue="{Binding SystemUser.BranchId, Mode=TwoWay}"/>
+                    </Grid>
+                </TabItem>
+
+                <!-- تبويب الأمان والأدوار -->
+                <TabItem Header="الأمان والأدوار">
+                    <Grid Margin="20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- الدور -->
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="الدور"/>
+                        <ComboBox Grid.Row="1" Grid.Column="0"
+                                  ItemsSource="{Binding Roles}"
+                                  DisplayMemberPath="Name"
+                                  SelectedValuePath="Id"
+                                  SelectedValue="{Binding SystemUser.UserRollid, Mode=TwoWay}"/>
+
+                        <!-- كلمة المرور -->
+                        <TextBlock Grid.Row="2" Grid.Column="0" Text="كلمة المرور"/>
+                        <PasswordBox Grid.Row="3" Grid.Column="0" 
+                                      x:Name="PasswordBox"
+                                      PasswordChanged="PasswordBox_PasswordChanged"/>
+
+                        <!-- تأكيد كلمة المرور -->
+                        <TextBlock Grid.Row="2" Grid.Column="1" Text="تأكيد كلمة المرور"/>
+                        <PasswordBox Grid.Row="3" Grid.Column="1" 
+                                      x:Name="ConfirmPasswordBox"
+                                      PasswordChanged="ConfirmPasswordBox_PasswordChanged"/>
+
+                        <!-- حالة القفل -->
+                        <TextBlock Grid.Row="4" Grid.Column="0" Text="حالة القفل"/>
+                        <CheckBox Grid.Row="5" Grid.Column="0" 
+                                  Content="مقفل"
+                                  IsChecked="{Binding SystemUser.IsLocked, Mode=TwoWay}"/>
+
+                        <!-- آخر تسجيل دخول -->
+                        <TextBlock Grid.Row="4" Grid.Column="1" Text="آخر تسجيل دخول"/>
+                        <TextBlock Grid.Row="5" Grid.Column="1" 
+                                   Text="{Binding SystemUser.LastLoginText}"
+                                   Foreground="#6B7280"/>
+
+                        <!-- عدد المحاولات الفاشلة -->
+                        <TextBlock Grid.Row="6" Grid.Column="0" Text="عدد المحاولات الفاشلة"/>
+                        <TextBlock Grid.Row="7" Grid.Column="0" 
+                                   Text="{Binding SystemUser.FailedLoginAttempts}"
+                                   Foreground="#6B7280"/>
+
+                        <!-- تاريخ انتهاء القفل -->
+                        <TextBlock Grid.Row="6" Grid.Column="1" Text="تاريخ انتهاء القفل"/>
+                        <TextBlock Grid.Row="7" Grid.Column="1" 
+                                   Text="{Binding SystemUser.LockoutEnd, StringFormat=\{0:yyyy-MM-dd HH:mm\}}"
+                                   Foreground="#6B7280"/>
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+
+        <!-- شريط الحالة -->
+        <Border Grid.Row="3" 
+                Background="#F3F4F6" 
+                CornerRadius="4" 
+                Padding="12,8" 
+                Margin="0,10,0,0">
+            <TextBlock Text="{Binding StatusMessage}" 
+                       FontSize="12" 
+                       Foreground="#6B7280"/>
+        </Border>
+    </Grid>
+</Window>

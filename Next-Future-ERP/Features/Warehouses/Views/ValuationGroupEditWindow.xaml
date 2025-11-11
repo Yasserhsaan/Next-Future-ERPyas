@@ -1,0 +1,230 @@
+<ui:FluentWindow
+    x:Class="Next_Future_ERP.Features.Warehouses.Views.ValuationGroupEditWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    xmlns:controls="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+    mc:Ignorable="d"
+    Title="{Binding WindowTitle}"
+    Height="600" Width="900"
+    FlowDirection="RightToLeft"
+    WindowStartupLocation="CenterOwner"
+    ResizeMode="CanResizeWithGrip"
+    UseLayoutRounding="True"
+    SnapsToDevicePixels="True"
+    FontSize="14"
+    Loaded="Window_Loaded">
+
+    <!-- موارد بسيطة وآمنة -->
+    <ui:FluentWindow.Resources>
+        <Style TargetType="TextBlock" x:Key="Label">
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="0,0,0,6"/>
+        </Style>
+
+        <!-- أيقونات MDL2 -->
+        <Style x:Key="IconText" TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Margin" Value="0,0,6,0"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </ui:FluentWindow.Resources>
+
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <ui:TitleBar
+            x:Name="TitleBar"
+            Title="بيانات الحساب"
+            Grid.Row="0"
+            CloseWindowByDoubleClickOnIcon="True" />
+
+        <!-- شريط علوي -->
+        <controls:Card Grid.Row="1" Padding="12" Margin="0,0,0,12">
+            <DockPanel LastChildFill="False">
+                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
+                    <Button Padding="14,10" Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE74E;"/>
+                            <!-- Save -->
+                            <TextBlock Text="حفظ" FontSize="15"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="14,10" Margin="8,0,0,0" Command="{Binding CancelCommand}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource IconText}" Text="&#xE711;"/>
+                            <!-- Cancel -->
+                            <TextBlock Text="إلغاء" FontSize="15"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </controls:Card>
+
+        <!-- المحتوى الرئيسي -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+            <TabControl>
+                <!-- تبويب التفاصيل -->
+                <TabItem Header="التفاصيل">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- الكود -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="الكود" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" 
+                                     Text="{Binding Model.ValuationGroupCode, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- الاسم -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="الاسم" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="1" Grid.Column="1" 
+                                     Text="{Binding Model.ValuationGroupName, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- الوصف -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="الوصف" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="2" Grid.Column="1" 
+                                     Text="{Binding Model.Description, UpdateSourceTrigger=PropertyChanged}"
+                                     AcceptsReturn="True" Height="70" TextWrapping="Wrap"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- مركز التكلفة -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="مركز التكلفة" Style="{StaticResource Label}"/>
+                            <TextBox Grid.Row="3" Grid.Column="1" 
+                                     Text="{Binding Model.CostCenterId, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="0,0,0,12"/>
+
+                            <!-- نشط -->
+                            <CheckBox Grid.Row="4" Grid.Column="1" 
+                                      IsChecked="{Binding Model.IsActive}" 
+                                      Content="نشط" VerticalAlignment="Center"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+
+                <!-- تبويب الحسابات -->
+                <TabItem Header="الحسابات">
+                    <controls:Card Margin="8" Padding="16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Inventory -->
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="حساب المخزون" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="0" Grid.Column="1"
+                                      ItemsSource="{Binding InventoryList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.InventoryAcc, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- COGS -->
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="حساب تكلفة البضائع" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1"
+                                      ItemsSource="{Binding CogsList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.CogsAcc, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- Sales -->
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="حساب المبيعات" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="2" Grid.Column="1"
+                                      ItemsSource="{Binding SalesList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.SalesAcc, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- Sales Discount -->
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="حساب خصم المبيعات" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="3" Grid.Column="1"
+                                      ItemsSource="{Binding SalesDiscountList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.SalesDiscountAcc, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- Loss -->
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="حساب الخسائر" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="4" Grid.Column="1"
+                                      ItemsSource="{Binding LossList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.LossAcc, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- Adjustment -->
+                            <TextBlock Grid.Row="5" Grid.Column="0" Text="حساب التسوية" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="5" Grid.Column="1"
+                                      ItemsSource="{Binding AdjustmentList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.AdjustmentAcc, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- Earned Discount -->
+                            <TextBlock Grid.Row="6" Grid.Column="0" Text="حساب الخصم المكتسب" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="6" Grid.Column="1"
+                                      ItemsSource="{Binding EarnedDiscountList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.EarnedDiscountAccount, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- Expense -->
+                            <TextBlock Grid.Row="7" Grid.Column="0" Text="حساب المصروفات" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="7" Grid.Column="1"
+                                      ItemsSource="{Binding ExpenseList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.ExpenseAcc, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+
+                            <!-- Tax Purchase -->
+                            <TextBlock Grid.Row="8" Grid.Column="0" Text="حساب ضريبة المشتريات" Style="{StaticResource Label}"/>
+                            <ComboBox Grid.Row="8" Grid.Column="1"
+                                      ItemsSource="{Binding TaxPurchaseList}"
+                                      DisplayMemberPath="AccountNameAr"
+                                      SelectedValuePath="AccountCode"
+                                      SelectedValue="{Binding Accounts.TaxAccPurchase, Mode=TwoWay}"
+                                      Margin="0,0,0,12"/>
+                        </Grid>
+                    </controls:Card>
+                </TabItem>
+            </TabControl>
+        </ScrollViewer>
+    </Grid>
+</ui:FluentWindow>

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="ar">
+<head><meta charset="utf-8"><title>مرتجع مبيعات</title>
+<style>body{direction:rtl;font-family: Arial;margin:18px}</style>
+</head><body>
+  <h2 style="text-align:center;">مرتجع مبيعات</h2>
+  <div>رقم المرجع: {{return.number}} &nbsp; | &nbsp; التاريخ: {{return.date}}</div>
+  <table style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>الصنف</th><th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th></tr></thead>
+    <tbody>
+      {{#return.items}}
+      <tr><td>{{name}}</td><td>{{qty}}</td><td>{{unit_price}}</td><td>{{line_total}}</td></tr>
+      {{/return.items}}
+    </tbody>
+  </table>
+  <div>الإجمالي: <strong>{{totals.total}}</strong></div>
+</body></html>

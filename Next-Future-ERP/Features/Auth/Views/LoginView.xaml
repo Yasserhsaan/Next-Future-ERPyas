@@ -1,0 +1,61 @@
+﻿<ui:FluentWindow x:Class="Next_Future_ERP.Features.Auth.Views.LoginView"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          xmlns:controls="clr-namespace:Wpf.Ui.Controls;assembly=Wpf.Ui"
+          xmlns:vm="clr-namespace:Next_Future_ERP.Features.Auth.ViewModels"
+          xmlns:converters="clr-namespace:Next_Future_ERP.Converters"
+          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+          xmlns:i18n="http://schemas.lepo.co/i18n/2022/xaml"
+          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:tray="http://schemas.lepo.co/wpfui/2022/xaml/tray"
+          xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"                   
+       ui:Design.Background="{Binding ApplicationBackgroundBrush}"
+        ui:Design.Foreground="{Binding TextFillColorPrimaryBrush}"
+          FlowDirection="RightToLeft"
+         WindowBackdropType="Mica"
+         ExtendsContentIntoTitleBar="True"
+         WindowCornerPreference="Default"
+         WindowStartupLocation="CenterScreen"
+        mc:Ignorable="d"
+        Title="{Binding ApplicationTitle}" Height="500" Width="800">
+
+    <!-- DataContext will be set in code-behind -->
+
+    <Grid>
+        <Grid.Resources>
+            <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        </Grid.Resources>
+        <ui:Card Background="{DynamicResource BackgroundBrush}"  Padding="20" Margin="20">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <!-- Logo -->
+                <Image Source="pack://application:,,,/Assets/logo/logo.png" 
+                       Width="120" 
+                       Height="120" 
+                       Margin="0,0,0,20" 
+                       HorizontalAlignment="Center"
+                       Stretch="Fill"/>
+                <!--<TextBlock Text="{Binding ApplicationTitle}" FontSize="24" FontWeight="Bold" Margin="0,0,0,50" HorizontalAlignment="Center"/>-->
+                <controls:TextBox  x:Name="Username" Text="{Binding Username}" Margin="0,0,0,10" Width="300" PlaceholderText="أسم المستخدم"/>
+                <ui:PasswordBox
+                  
+                    x:Name="Password"
+                    Margin="0,0,0,20"
+                    PlaceholderEnabled="True"
+                    Password="{Binding Password, Mode=TwoWay}"
+                    
+                    PlaceholderText="كلمة السر..." />
+                <ui:Button Content="دخول" Width="300" Command="{Binding LoginCommand}" IsEnabled="{Binding IsLoading, Converter={StaticResource InverseBooleanConverter}}"/>
+                
+            </StackPanel>
+        </ui:Card>
+
+        <ui:TitleBar
+            x:Name="TitleBar"
+            Title="{Binding ViewModel.ApplicationTitle}"
+            Grid.Row="0"
+            CloseWindowByDoubleClickOnIcon="True">
+          
+        </ui:TitleBar>      
+    </Grid>
+</ui:FluentWindow>

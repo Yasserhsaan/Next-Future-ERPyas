@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>فاتورة مبيعات - قالب افتراضي</title>
+<style>
+  body { font-family: "Tahoma", "Segoe UI", Arial; direction: rtl; margin: 12px; }
+  .header { display:flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .company { text-align: left; }
+  table { width:100%; border-collapse: collapse; margin-top: 6px; }
+  th, td { border: 1px solid #ddd; padding: 6px; text-align: center; }
+  .totals { margin-top:8px; width:100%; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div>
+      <h3>{{company.name}}</h3>
+      <div>{{company.address}}</div>
+      <div>هاتف: {{company.phone}}</div>
+      <div>الرقم الضريبي: {{company.vat_number}}</div>
+    </div>
+    <div style="text-align:right;">
+      <h2>فاتورة مبيعات</h2>
+      <div>رقم الفاتورة: <strong>{{invoice.number}}</strong></div>
+      <div>التاريخ: <strong>{{invoice.date}}</strong></div>
+    </div>
+  </div>
+
+  <div>
+    إلى: <strong>{{customer.name}}</strong> &nbsp; | &nbsp; العنوان: {{customer.address}} &nbsp; | &nbsp; الجوال: {{customer.phone}}
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>الرمز</th><th>الصنف</th><th>الكمية</th><th>الوحدة</th><th>سعر الوحدة</th><th>الخصم</th><th>قيمة الضريبة</th><th>الإجمالي</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#invoice.items}}
+      <tr>
+        <td>{{code}}</td>
+        <td style="text-align:right;">{{name}}</td>
+        <td>{{qty}}</td>
+        <td>{{uom}}</td>
+        <td>{{unit_price}}</td>
+        <td>{{discount}}</td>
+        <td>{{vat_value}}</td>
+        <td>{{line_total}}</td>
+      </tr>
+      {{/invoice.items}}
+    </tbody>
+  </table>
+
+  <div class="totals">
+    <table style="width:40%; float:left; border-collapse: collapse;">
+      <tr><td>مجموع السطور</td><td style="text-align:center;">{{totals.subtotal}}</td></tr>
+      <tr><td>إجمالي الضريبة</td><td style="text-align:center;">{{totals.vat}}</td></tr>
+      <tr><td><strong>الإجمالي الكلي</strong></td><td style="text-align:center;"><strong>{{totals.total}}</strong></td></tr>
+    </table>
+    <div style="clear:both;"></div>
+  </div>
+
+  <div style="margin-top:22px;">
+    ملاحظات: {{invoice.notes}}
+  </div>
+
+  <div style="margin-top:30px;">توقيع المحاسب: ____________________</div>
+</body>
+</html>

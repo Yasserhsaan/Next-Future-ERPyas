@@ -1,0 +1,90 @@
+<UserControl x:Class="Next_Future_ERP.Features.Items.Views.ItemSuppliersView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             Loaded="UserControl_Loaded">
+    <Grid>
+        <Grid.Resources>
+            <Style TargetType="DataGridColumnHeader">
+                <Setter Property="FontWeight" Value="SemiBold"/>
+                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                <Setter Property="Foreground" Value="#111827"/>
+                <Setter Property="Background" Value="#F3F4F6"/>
+                <Setter Property="Padding" Value="8,6"/>
+            </Style>
+            <Style TargetType="DataGridCell">
+                <Setter Property="Foreground" Value="Black"/>
+                <Setter Property="FontSize" Value="13.5"/>
+                <Setter Property="Padding" Value="6,2,6,2"/>
+            </Style>
+            <Style TargetType="DataGridRow">
+                <Setter Property="FontSize" Value="13.5"/>
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+            <Button Content="جديد" Margin="0,0,8,0" Width="90" Command="{Binding NewCommand}"/>
+            <Button Content="حفظ" Margin="0,0,8,0" Width="90" Command="{Binding SaveCommand}"/>
+            <Button Content="تحديث" Width="90" Command="{Binding LoadCommand}"/>
+        </StackPanel>
+
+        <!-- نموذج مبسط -->
+        <Grid Grid.Row="1" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <StackPanel Margin="6">
+                <TextBlock Text="المورد" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <ComboBox ItemsSource="{Binding SupplierOptions}"
+                          SelectedValue="{Binding Edit.SupplierID, Mode=TwoWay}"
+                          SelectedValuePath="Key"
+                          DisplayMemberPath="Value"/>
+            </StackPanel>
+            <StackPanel Margin="6" Grid.Column="1">
+                <TextBlock Text="السعر" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <TextBox Text="{Binding Edit.SupplierPrice, Mode=TwoWay}"/>
+            </StackPanel>
+            <StackPanel Margin="6" Grid.Column="2">
+                <TextBlock Text="العملة" Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <ComboBox ItemsSource="{Binding CurrencyOptions}"
+                          SelectedValue="{Binding Edit.CurrencyCode, Mode=TwoWay}"
+                          SelectedValuePath="Key"
+                          DisplayMemberPath="Value"/>
+            </StackPanel>
+            <StackPanel Margin="6" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+                <CheckBox IsChecked="{Binding Edit.IsPrimarySupplier, Mode=TwoWay}" Content="رئيسي" 
+                          Foreground="#111827" FontWeight="SemiBold" Margin="0,0,0,4"/>
+            </StackPanel>
+        </Grid>
+
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Suppliers}" AutoGenerateColumns="False" CanUserAddRows="False" SelectedItem="{Binding Edit}"
+                  HeadersVisibility="Column" AlternatingRowBackground="#FAFAFA" BorderBrush="#E2E8F0" BorderThickness="1">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="#" Binding="{Binding ItemSupplierID}" Width="60" IsReadOnly="True"/>
+                <DataGridTextColumn Header="المورد" Binding="{Binding SupplierName}" Width="*"/>
+                <DataGridTextColumn Header="السعر" Binding="{Binding SupplierPrice}" Width="120"/>
+                <DataGridTextColumn Header="العملة" Binding="{Binding CurrencyCode}" Width="100"/>
+                <DataGridCheckBoxColumn Header="رئيسي" Binding="{Binding IsPrimarySupplier}" Width="90"/>
+                <DataGridTemplateColumn Header="حذف" Width="80">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="حذف" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</UserControl>
+
+
