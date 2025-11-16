@@ -1,9 +1,10 @@
-﻿// Features/Accounts/Services/AccountsService.cs
+﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Next_Future_ERP.Data;
 using Next_Future_ERP.Data.Factories;
 using Next_Future_ERP.Features.Accounts.Models;
 using Next_Future_ERP.Models;
+using System.Data;
 using System.Windows;
 
 namespace Next_Future_ERP.Features.Accounts.Services
@@ -16,6 +17,35 @@ namespace Next_Future_ERP.Features.Accounts.Services
         {
             _context = DbContextFactory.Create();
         }
+
+        /// <summary>
+        /// يضمن تهيئة جذور الدليل (1/2/3/4/5) من V_AccountStructureSettings إذا كانت ناقصة
+        /// عبر الإجراء المخزن: dbo.sp_EnsureMainAccountsSeeded @CompanyId, @BranchId
+        /// لا يرجع بيانات، فقط يقوم بالتهيئة عند الحاجة.
+        /// </summary>
+        public async Task EnsureMainAccountsSeededAsync(int companyId, int? branchId = null, CancellationToken ct = default)
+        {
+            try
+            {
+                var pCompany = new SqlParameter("@CompanyId", SqlDbType.Int) { Value = companyId };
+                var pBranch = new SqlParameter("@BranchId", SqlDbType.Int)
+                {
+                    Value = (object?)branchId ?? DBNull.Value,
+                    IsNullable = true
+                };
+
+                await _context.Database.ExecuteSqlRawAsync(
+                    "EXEC dbo.sp_EnsureMainAccountsSeeded @CompanyId, @BranchId",
+                    new[] { pCompany, pBranch }, ct);
+            }
+            catch (Exception ex)
+            {
+                // لا نوقف الشاشة؛ فقط نبلغ
+                MessageBox.Show($"⚠️ تعذر تهيئة جذور الدليل تلقائيًا:\n{ex.Message}",
+                    "تنبيه", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
         // استرجاع الحسابات التي نوعها = 2 (فرعية)
         public async Task<List<Account>> GetAccountsOfType2Async()
         {
@@ -43,7 +73,7 @@ namespace Next_Future_ERP.Features.Accounts.Services
             catch (Exception ex)
             {
                 MessageBox.Show($"❌ خطأ أثناء جلب البيانات:\n{ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
-                return new(); // إرجاع قائمة فارغة
+                return new();
             }
         }
 
@@ -66,7 +96,7 @@ namespace Next_Future_ERP.Features.Accounts.Services
             catch (Exception ex)
             {
                 MessageBox.Show($"❌ حدث خطأ أثناء تحميل شجرة الحسابات:\n{ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
-                return new(); // قائمة فارغة في حال الخطأ
+                return new();
             }
         }
 
@@ -97,19 +127,16 @@ namespace Next_Future_ERP.Features.Accounts.Services
                     return;
                 }
 
-                // تحديث الحقول النصية والحالة
                 existing.AccountNameAr = acc.AccountNameAr;
                 existing.AccountNameEn = acc.AccountNameEn;
                 existing.Notes = acc.Notes;
                 existing.IsActive = acc.IsActive;
 
-                // الحقول التصنيفية والطبيعة ونوع الحساب والتدفق النقدي
                 existing.AccountClassification = acc.AccountClassification;
                 existing.Nature = acc.Nature;
                 existing.AccountType = acc.AccountType;
                 existing.TypeOfCashFlow = acc.TypeOfCashFlow;
 
-                // استخدام مركز تكلفة وصلاحية المستوى والفئة
                 existing.UsesCostCenter = acc.UsesCostCenter;
                 existing.AccountLevelPrivlige = acc.AccountLevelPrivlige;
                 existing.AccountCategoryKey = acc.AccountCategoryKey;
@@ -144,16 +171,15 @@ namespace Next_Future_ERP.Features.Accounts.Services
                 MessageBox.Show($"❌ حدث خطأ أثناء الحذف:\n{ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
+
         public async Task<AccountLevelInfo?> GetAccountLevelInfoAsync(string accountCode)
         {
-            // استدعاء TVF
             return await _context.Set<AccountLevelInfo>()
                 .FromSqlInterpolated($"SELECT * FROM fn_GetAccountLevelInfo({accountCode})")
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
         }
 
-        // AccountsService.cs (إضافة)
         public async Task<List<Account>> GetByCategoryKeyAsync(string categoryKey)
         {
             try
@@ -171,6 +197,5 @@ namespace Next_Future_ERP.Features.Accounts.Services
                 return new();
             }
         }
-
     }
 }

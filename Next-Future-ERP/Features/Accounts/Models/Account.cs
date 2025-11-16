@@ -1,8 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Windows;
-using System.Windows.Media.Imaging;
 
 namespace Next_Future_ERP.Models
 {
@@ -37,11 +35,8 @@ namespace Next_Future_ERP.Models
         public int? AccountGroupId { get; set; }
         public int? AccountLevelPrivlige { get; set; }
         public string? AccountCategoryKey { get; set; }
+
         [NotMapped]
-        // خصائص الشجرة
         public List<Account> Children { get; set; } = new();
-
-
-
     }
 }

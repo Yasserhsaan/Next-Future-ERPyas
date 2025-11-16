@@ -2,8 +2,15 @@
 using CommunityToolkit.Mvvm.Input;
 using Next_Future_ERP.Features.Accounts.Services;
 using Next_Future_ERP.Models;
+using Next_Future_ERP.Features.Accounts.Services;
+using Next_Future_ERP.Features.Auth.Services;
 using Next_Future_ERP.Views;
+using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel.Design;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
@@ -12,6 +19,15 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
     public partial class AccountsViewModel : ObservableObject
     {
         private readonly AccountsService _service = new();
+        private ISessionService? _session;
+
+        // ⬅️ إضافة
+
+        // لضمان استدعاء تهيئة الجذور مرة واحدة فقط
+        private bool _rootsEnsured;
+
+        [ObservableProperty] private int companyId;
+        [ObservableProperty] private int? branchId;
 
         [ObservableProperty]
         private ObservableCollection<Account> rootAccounts = new();
@@ -32,25 +48,59 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
             set
             {
                 SetProperty(ref _selectedTabAccount, value);
-                SelectedAccount = value; // لتفعيل الأزرار عند اختيار تبويب
+                SelectedAccount = value;
             }
         }
 
         private ICommand _addSubAccountCommand;
         public ICommand AddSubAccountCommand => _addSubAccountCommand ??= new RelayCommand(AddSubAccount);
 
-        public AccountsViewModel()
+        public AccountsViewModel() { }
+
+        // (اختياري) منشئ يعتمد الـ Session لو أردت استعماله من code-behind بدلاً من InitializeFromSession
+        public AccountsViewModel(ISessionService session) : this()
         {
-            // التحميل عند الاستخدام فقط
+            InitializeFromSession(session);
         }
 
+        // ✅ مهيّئ يُستدعى بعد الإنشاء عندما يُوفّر لنا Session
+        public void InitializeFromSession(ISessionService session)
+        {
+            _session = session;
+            var cu = _session.CurrentUser;
+            CompanyId = cu?.CompanyId ?? 1;
+            BranchId = cu?.BranchId;
+        }
         public Task ReloadTreeAsync() => LoadTreeAsync();
+
+        /// <summary>
+        /// يضمن تهيئة جذور الدليل (1/2/3/4/5) من الفيو عند فراغ الدليل أو نقص الجذور.
+        /// يستدعي: sp_EnsureMainAccountsSeeded(@CompanyId,@BranchId) مرة واحدة فقط.
+        /// </summary>
+        private async Task EnsureRootsOnceAsync(CancellationToken ct = default)
+        {
+            if (_rootsEnsured) return;
+
+            try
+            {
+                // CompanyId/BranchId يجب أن يكونا مضبوطين قبل الاستدعاء
+                await _service.EnsureMainAccountsSeededAsync(companyId, branchId, ct);
+                _rootsEnsured = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"⚠️ تعذر تهيئة جذور الدليل تلقائيًا:\n{ex.Message}", "تنبيه",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
 
         [RelayCommand]
         private async Task LoadTreeAsync()
         {
             try
             {
+                await EnsureRootsOnceAsync();
+
                 RootAccounts.Clear();
                 var items = await _service.GetAccountsTreeAsync();
                 foreach (var item in items)
@@ -67,6 +117,8 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
         {
             try
             {
+                await EnsureRootsOnceAsync();
+
                 Accounts.Clear();
                 var items = await _service.GetAllAsync();
                 foreach (var item in items)
@@ -87,6 +139,7 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
                 {
                     await _service.AddAsync(SelectedAccount);
                     await LoadAccountsAsync();
+                    await LoadTreeAsync();
                     SelectedAccount = new Account();
                 }
             }
@@ -105,6 +158,7 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
                 {
                     await _service.UpdateAsync(SelectedAccount);
                     await LoadAccountsAsync();
+                    await LoadTreeAsync();
                 }
             }
             catch (Exception ex)
@@ -122,6 +176,7 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
                 {
                     await _service.DeleteAsync(SelectedAccount.AccountId);
                     await LoadAccountsAsync();
+                    await LoadTreeAsync();
                 }
             }
             catch (Exception ex)
@@ -129,6 +184,7 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
                 MessageBox.Show($"❌ خطأ أثناء الحذف:\n{ex.Message}");
             }
         }
+
         [RelayCommand]
         private async Task EditAccountAsync()
         {
@@ -137,13 +193,13 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
                 if (SelectedAccount == null)
                     return;
 
-                var dialog = new AccountDialog(null, SelectedAccount); // null لأننا نعدل مباشرة
+                var dialog = new AccountDialog(null, SelectedAccount);
                 bool? result = dialog.ShowDialog();
 
                 if (result == true)
                 {
-                    await LoadAccountsAsync(); // إعادة تحميل القائمة
-                    await LoadTreeAsync();     // إعادة تحميل الشجرة
+                    await LoadAccountsAsync();
+                    await LoadTreeAsync();
                 }
             }
             catch (Exception ex)
@@ -156,8 +212,8 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
         {
             try
             {
-                //if (SelectedAccount == null)
-                //    return;
+                if (SelectedAccount == null)
+                    return;
 
                 var dialog = new AccountDialog(SelectedAccount);
 
@@ -166,7 +222,6 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
                     try
                     {
                         await ReloadTreeAsync();
-                        // اختيار الحساب الجديد تلقائيًا ممكن لاحقًا
                     }
                     catch (Exception ex)
                     {
@@ -182,29 +237,22 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
             }
         }
 
-
-
         [RelayCommand]
         private async Task OpenAddDialogAsync(Account? parent = null)
         {
-            // سيتم التفعيل لاحقاً
+            // سيتم التفعيل لاحقًا وفق تدفق التطبيق
         }
-
-        //[RelayCommand]
-        //private async Task OpenEditDialogAsync(Account account)
-        //{
-        //    // سيتم التفعيل لاحقاً
-        //}
 
         [RelayCommand]
         private async Task DeleteAccountAsync(Account account)
         {
             try
             {
-                if (SelectedAccount is not null)
+                if (account is not null)
                 {
-                    await _service.DeleteAsync(SelectedAccount.AccountId);
+                    await _service.DeleteAsync(account.AccountId);
                     await LoadAccountsAsync();
+                    await LoadTreeAsync();
                 }
             }
             catch (Exception ex)
@@ -222,6 +270,8 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
         {
             try
             {
+                await EnsureRootsOnceAsync();
+
                 var allAccounts = await _service.GetAccountsTreeAsync();
 
                 if (string.IsNullOrWhiteSpace(SearchQuery))

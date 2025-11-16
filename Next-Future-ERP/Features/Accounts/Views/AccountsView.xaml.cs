@@ -1,19 +1,15 @@
-﻿using Microsoft.Data.SqlClient;
-using Next_Future_ERP.Core.Services.Contracts;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Next_Future_ERP.Features.Auth.Services;
 using Next_Future_ERP.Features.Accounts.ViewModels;
 using Next_Future_ERP.Models;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace Next_Future_ERP.Features.Accounts.Views
 {
     public partial class AccountsView : Page
     {
-      
-
         public AccountsView()
         {
             InitializeComponent();
@@ -24,37 +20,33 @@ namespace Next_Future_ERP.Features.Accounts.Views
         {
             if (DataContext is AccountsViewModel vm)
             {
-               // await Task.Delay(100); // فقط للسماح بتحميل UI
-                await vm.ReloadTreeAsync(); // تحميل التابات والشجرة
+                // خذ الـ Session من DI
+                var session = App.ServiceProvider.GetRequiredService<ISessionService>();
+
+                // ✅ جهّز CompanyId/BranchId في الـ VM (ويُسمح للـ XAML بالإنشاء)
+                vm.InitializeFromSession(session);
+
+                await vm.ReloadTreeAsync(); // سيضمن EnsureMainAccountsSeededAsync داخليًا
             }
         }
+
         private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (DataContext is AccountsViewModel vm)
-            {
                 vm.SelectedAccount = e.NewValue as Account;
-            }
         }
+
         private void CloseTab_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button closeButton)
+            if (sender is Button closeButton && closeButton.DataContext is Account accountToClose)
             {
-                if (closeButton.DataContext is Account accountToClose)
+                if (DataContext is AccountsViewModel vm)
                 {
-                    var viewModel = DataContext as AccountsViewModel;
-                    if (viewModel != null)
-                    {
-                        viewModel.RootAccounts.Remove(accountToClose);
-
-                        // إعادة تعيين التاب المحدد إذا تم إغلاق التاب النشط
-                        if (viewModel.SelectedTabAccount == accountToClose)
-                        {
-                            viewModel.SelectedTabAccount = viewModel.RootAccounts.FirstOrDefault();
-                        }
-                    }
+                    vm.RootAccounts.Remove(accountToClose);
+                    if (vm.SelectedTabAccount == accountToClose)
+                        vm.SelectedTabAccount = vm.RootAccounts.FirstOrDefault();
                 }
             }
         }
-
     }
 }
