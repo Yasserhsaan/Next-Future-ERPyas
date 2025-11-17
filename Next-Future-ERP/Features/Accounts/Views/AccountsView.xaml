@@ -14,7 +14,9 @@
     <Page.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <local:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+        <local:NullToBoolConverter x:Key="NullToBoolConverter"/>
 
+        <!-- تبويب بسيط أنيق -->
         <Style TargetType="TabControl">
             <Setter Property="Template">
                 <Setter.Value>
@@ -45,9 +47,12 @@
                     <ControlTemplate TargetType="TabItem">
                         <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                             <StackPanel Orientation="Horizontal" Margin="10,4">
-                                <TextBlock Text="⭐" FontSize="12" Foreground="#2196F3" Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                <TextBlock Text="⭐" FontSize="12" Foreground="#2196F3"
+                                           Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=IsSelected, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                 <ContentPresenter ContentSource="Header" VerticalAlignment="Center" Margin="5,0,5,0"/>
-                                <Button Content="×" Width="18" Height="18" FontSize="11" Padding="0" Background="Transparent" BorderThickness="0" Foreground="Gray" Cursor="Hand" Click="CloseTab_Click"/>
+                                <Button Content="×" Width="18" Height="18" FontSize="11" Padding="0"
+                                        Background="Transparent" BorderThickness="0" Foreground="Gray"
+                                        Cursor="Hand" Click="CloseTab_Click"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>
@@ -62,10 +67,9 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <local:NullToBoolConverter x:Key="NullToBoolConverter"/>
     </Page.Resources>
 
+    <!-- يظل الـ DataContext كما هو لتمكين الإنشاء من XAML (VM له منشئ افتراضي عام) -->
     <Page.DataContext>
         <viewmodels:AccountsViewModel/>
     </Page.DataContext>
@@ -73,28 +77,45 @@
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <!-- شريط علوي: بحث + أزرار Excel -->
             <RowDefinition Height="*"/>
+            <!-- الشجرة -->
             <RowDefinition Height="Auto"/>
+            <!-- الأزرار السفلية (إضافة/تعديل/حذف) -->
         </Grid.RowDefinitions>
 
-        <!-- العنوان -->
-        
-        <Grid Width="200" Height="30" Margin="0,0,0,10">
-            <TextBox x:Name="SearchTextBox"
-             Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-             VerticalContentAlignment="Center"
-             Padding="5"/>
+        <!-- الشريط العلوي -->
+        <DockPanel Grid.Row="0" LastChildFill="True" Margin="0,0,0,10">
+            <!-- أزرار Excel على اليسار -->
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Left" HorizontalAlignment="Left" Margin="0,0,10,0">
+                <Button Content="⬇️ تنزيل نموذج الدليل (Excel)"
+                        Padding="10,6"
+                        Margin="0,0,8,0"
+                        Command="{Binding DownloadCoaTemplateCommand}"/>
+                <Button Content="⬆️ رفع الدليل من Excel"
+                        Padding="10,6"
+                        Command="{Binding ImportCoaFromExcelCommand}"/>
+            </StackPanel>
 
-            <TextBlock Text="ادخل اسم الحساب"
-               Foreground="Gray"
-               Margin="5,0,0,0"
-               VerticalAlignment="Center"
-               IsHitTestVisible="False"
-               Visibility="{Binding Text, ElementName=SearchTextBox, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
-        </Grid>
+            <!-- مربع البحث على اليمين -->
+            <Grid Width="280" Height="32" HorizontalAlignment="Right">
+                <Border Background="White" CornerRadius="6" BorderBrush="#DDD" BorderThickness="1"/>
+                <TextBox x:Name="SearchTextBox"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Margin="6,2,6,2"
+                         Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                         VerticalContentAlignment="Center"/>
+                <TextBlock Text="ادخل اسم الحساب"
+                           Foreground="Gray"
+                           Margin="12,0,0,0"
+                           VerticalAlignment="Center"
+                           IsHitTestVisible="False"
+                           Visibility="{Binding Text, ElementName=SearchTextBox, Converter={StaticResource EmptyStringToVisibilityConverter}}"/>
+            </Grid>
+        </DockPanel>
 
-
-        <!-- الشجرة -->
+        <!-- الشجرة ضمن تبويبات الجذور -->
         <TabControl Grid.Row="1"
                     ItemsSource="{Binding RootAccounts}"
                     SelectedItem="{Binding SelectedTabAccount, Mode=TwoWay}"
@@ -124,16 +145,19 @@
             </TabControl.ContentTemplate>
         </TabControl>
 
-        <!-- الأزرار -->
+        <!-- الأزرار السفلية -->
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
             <Button Content="➕ إضافة"
-        Command="{Binding AddSubAccountCommand}"
-        IsEnabled="{Binding SelectedAccount, Converter={StaticResource NullToBoolConverter}}"/>
+                    Command="{Binding AddSubAccountCommand}"
+                    IsEnabled="{Binding SelectedAccount, Converter={StaticResource NullToBoolConverter}}"/>
             <Button Content="✏️ تعديل"
-        Margin="5,0"
-        Command="{Binding EditAccountCommand}"
-        IsEnabled="{Binding SelectedAccount, Converter={StaticResource NullToBoolConverter}}"/>
-            <Button Content="🗑️ حذف" Margin="5,0" Command="{Binding DeleteAccountCommand}" IsEnabled="{Binding SelectedAccount, Converter={StaticResource NullToBoolConverter}}"/>
+                    Margin="5,0"
+                    Command="{Binding EditAccountCommand}"
+                    IsEnabled="{Binding SelectedAccount, Converter={StaticResource NullToBoolConverter}}"/>
+            <Button Content="🗑️ حذف"
+                    Margin="5,0"
+                    Command="{Binding DeleteAccountCommand}"
+                    IsEnabled="{Binding SelectedAccount, Converter={StaticResource NullToBoolConverter}}"/>
         </StackPanel>
     </Grid>
 </Page>

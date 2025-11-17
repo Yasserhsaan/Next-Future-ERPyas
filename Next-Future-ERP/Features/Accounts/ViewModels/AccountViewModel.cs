@@ -1,9 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.DependencyInjection;
+using Next_Future_ERP.Data;
+using Microsoft.Win32;
 using Next_Future_ERP.Features.Accounts.Services;
-using Next_Future_ERP.Models;
 using Next_Future_ERP.Features.Accounts.Services;
 using Next_Future_ERP.Features.Auth.Services;
+using Next_Future_ERP.Models;
 using Next_Future_ERP.Views;
 using System;
 using System.Collections.ObjectModel;
@@ -18,6 +21,7 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
 {
     public partial class AccountsViewModel : ObservableObject
     {
+        private readonly AccountsImportService _importService = new(App.ServiceProvider.GetService<AppDbContext>()!);
         private readonly AccountsService _service = new();
         private ISessionService? _session;
 
@@ -91,6 +95,61 @@ namespace Next_Future_ERP.Features.Accounts.ViewModels
             {
                 MessageBox.Show($"⚠️ تعذر تهيئة جذور الدليل تلقائيًا:\n{ex.Message}", "تنبيه",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+
+        [RelayCommand]
+        private async Task DownloadCoaTemplateAsync()
+        {
+            try
+            {
+                var sfd = new SaveFileDialog
+                {
+                    FileName = "COA_Template.xlsx",
+                    Filter = "Excel Workbook (*.xlsx)|*.xlsx"
+                };
+                if (sfd.ShowDialog() == true)
+                {
+                    await _importService.CreateTemplateAsync(sfd.FileName);
+                    MessageBox.Show("✅ تم إنشاء نموذج الدليل بنجاح.", "نجاح", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ فشل إنشاء النموذج:\n{ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        [RelayCommand]
+        private async Task ImportCoaFromExcelAsync()
+        {
+            try
+            {
+                var ofd = new OpenFileDialog
+                {
+                    Filter = "Excel Workbook (*.xlsx)|*.xlsx"
+                };
+                if (ofd.ShowDialog() != true) return;
+
+                // ضمان الجذور (لو الشاشة تُفتح لأول مرة)
+                await EnsureRootsOnceAsync();
+
+                var result = await _importService.ImportAsync(ofd.FileName, CompanyId, BranchId, ensureRoots: true);
+                if (!result.Ok)
+                {
+                    var msg = string.Join("\n", result.Errors ?? new());
+                    MessageBox.Show($"فشل الاستيراد:\n{msg}", "أخطاء", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                await LoadTreeAsync();
+                await LoadAccountsAsync();
+                MessageBox.Show(result.Message!, "نجاح", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"❌ حدث خطأ أثناء الاستيراد:\n{ex.Message}", "خطأ", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

@@ -40,6 +40,7 @@ namespace Next_Future_ERP.Data
         public DbSet<AccountClass> AccountClasses { get; set; }
         // public DbSet<AccountCategoryRoll> AccountCategoryRolls { get; set; } // جديد
         public DbSet<AccountLevelPrivlige> AccountLevelPrivliges { get; set; }
+        public DbSet<V_AccountStructureSettingsRow> V_AccountStructureSettings => Set<V_AccountStructureSettingsRow>();
         public DbSet<AccountLevelInfo> AccountLevelInfos => Set<AccountLevelInfo>();
         public DbSet<DocumentSequence> DocumentSequences => Set<DocumentSequence>();
         public DbSet<Account> Accounts { get; set; }
@@ -72,6 +73,8 @@ namespace Next_Future_ERP.Data
         public DbSet<Bank> Banks { get; set; }
 
         public DbSet<FundCurrencyLimit> FundCurrencyLimits { get; set; }
+        public DbSet<AccountCategoryRoll> AccountCategoryRoll { get; set; }
+        
         // Initial System Entities
         public DbSet<CompanyInfoModel> CompanyInfo { get; set; }
         public DbSet<BranchModel> Branches { get; set; }
@@ -94,8 +97,7 @@ namespace Next_Future_ERP.Data
         public DbSet<PaymentMethod> PaymentMethods { get; set; }
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SupplierPaymentMethod> SupplierPaymentMethods { get; set; }
-
-       public DbSet<Warehouse> Warehouses { get; set; }
+        public DbSet<Warehouse> Warehouses { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemUnit> ItemUnits { get; set; }
         public DbSet<ItemPrice> ItemPrices { get; set; }
@@ -181,6 +183,7 @@ namespace Next_Future_ERP.Data
             b.Property(e => e.CategoryKey).HasMaxLength(50);
 
             modelBuilder.Entity<AccountLevelInfo>().HasNoKey();
+            modelBuilder.Entity<V_AccountStructureSettingsRow>().HasNoKey();
 
             modelBuilder.Entity<Account>()
            .ToTable("Accounts")
@@ -394,6 +397,13 @@ namespace Next_Future_ERP.Data
             modelBuilder.Entity<FundCurrencyLimit>()
                 .ToTable("FundCurrencyLimits")
                 .HasKey(l => l.LimitId);
+            modelBuilder.Entity<AccountCategoryRoll>(entity =>
+            {
+                entity.ToTable("AccountCategoryRoll");
+                entity.HasKey(e => e.CategoryKey);
+            });
+
+
 
             modelBuilder.Entity<FundCurrencyLimit>()
                 .HasIndex(l => l.LimitId).IsUnique();
